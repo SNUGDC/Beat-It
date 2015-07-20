@@ -11,7 +11,7 @@ public class BeatGenerator : MonoBehaviour {
 
 	public void OnSocketRead(string input) {
 		// socket format is
-		// "player noteId judge(multiplied by 10) button"
+		// "player noteId judge button"
 		string[] splitInput = input.Split(' ');
 		int player = Convert.ToInt32(splitInput[0]);
 		BattleManager.Data newData = new BattleManager.Data {
@@ -26,7 +26,9 @@ public class BeatGenerator : MonoBehaviour {
 	void Start() {
 		// TODO : read beat data from file
 		for(int i = 1; i <= 100; ++i) {
-			NoteList.Enqueue(new Note((uint)(i - 1), 1000000 * (i + 3)));
+			Note newNote = new Note((uint)i, 1000000 * (i + 3));
+			if(i % 5 == 0) newNote.Flip = true;
+			NoteList.Enqueue(newNote);
 		}
 		StartTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
 		GameObject.Find("NetworkManager").GetComponent<NetworkConnector>()

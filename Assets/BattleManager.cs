@@ -15,7 +15,10 @@ public class BattleManager : MonoBehaviour {
 	public JudgeDisplayer[] JudgeDisplayer;
 	public Queue<BattleManager.Data>[] DataQueue;
 
+	private int AttackerIndex;
+
 	void Start () {
+		this.AttackerIndex = 0;
 		DataQueue = new Queue<BattleManager.Data>[2] {
 			new Queue<BattleManager.Data>(),
 			new Queue<BattleManager.Data>()
@@ -25,7 +28,7 @@ public class BattleManager : MonoBehaviour {
 	void Update () {
 	}
 
-	public IEnumerator DoBattle(uint id) {
+	public IEnumerator DoBattle(uint id, bool flip) {
 		yield return new WaitForSeconds(BattleManager.NETWORK_DELAY);
 		// dequeue one note from Dataqueue[0]
 		BattleManager.Data Player1Data;
@@ -59,15 +62,29 @@ public class BattleManager : MonoBehaviour {
 		JudgeDisplayer[1].SetJudge(Player2Data.Judge / 10.0f,
 								   Player2Data.Button);
 		// core battle logic
-		if(Player1Data.Button != Note.Button.NONE) {
-			if(Player1Data.Button == Player2Data.Button
-			   && Player1Data.Judge < Player2Data.Judge) {
-				Player[1].IncreaseSp(10);
+		Player Attacker = (this.AttackerIndex == 0) ? Player[0] : Player[1];
+		Player Defender = (this.AttackerIndex == 0) ? Player[1] : Player[0];
+		BattleManager.Data AttackData = (this.AttackerIndex == 0)
+										? Player1Data
+										: Player2Data;
+		BattleManager.Data DefendData = (this.AttackerIndex == 0)
+										? Player2Data
+										: Player1Data;
+		if(AttackData.Button != Note.Button.NONE) {
+			if(AttackData.Button == DefendData.Button
+			   && AttackData.Judge < DefendData.Judge) {
+				Defender.IncreaseSp(10);
 			}
 			else {
-				Player[1].IncreaseHp(-10);
-				Player[0].IncreaseSp(10);
+				Defender.IncreaseHp(-10);
+				Attacker.IncreaseSp(10);
 			}
 		}
+		if(flip) FlipAttacker();
+	}
+
+	public void FlipAttacker() {
+		if(this.AttackerIndex == 0) this.AttackerIndex = 1;
+		else						this.AttackerIndex = 0;
 	}
 }

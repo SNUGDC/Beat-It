@@ -4,7 +4,9 @@ public class Note{
 	public const uint TIME_MARGIN = 500000;
 	public enum Button {NONE, RED, BLUE, GREEN};
 
-	public uint Id;
+	public uint Id; // Id starts from 1
+					// Id number 0 refers to flipping attacker
+	public bool Flip; // flips attacker
 	public bool IsValid;
 	public Button[] PressedButton;
 	public uint[] Judge;
@@ -12,6 +14,7 @@ public class Note{
 
 	public Note(uint id, int time = 0) {
 		Id = id;
+		Flip = false;
 		IsValid = false;
 		PressedButton = new Button[2] {Button.NONE, Button.NONE};
 		Judge = new uint[2] {0, 0};
@@ -44,37 +47,36 @@ public class Note{
 		generator.NoteList.Dequeue();
 		NetworkConnector network = GameObject.Find("NetworkManager")
 											 .GetComponent<NetworkConnector>();
+		BattleManager battleManager = GameObject.Find("BattleManager")
+												.GetComponent<BattleManager>();
 		if(network.LocalPlayer[0]) {
-			GameObject.Find("BattleManager").GetComponent<BattleManager>()
-				.DataQueue[0].Enqueue(new BattleManager.Data{
+			battleManager.DataQueue[0].Enqueue(new BattleManager.Data{
 					Id = this.Id,
 					Judge = this.Judge[0],
 					Button = this.PressedButton[0]
 				});
 		}
 		else {
-			network.SendString('0'
-							   + " " + Id.ToString()
-							   + " " + PressedButton[0].ToString()
-							   + " " + this.Judge[0].ToString());
+			network.SendString("0"
+							   + ' ' + Id.ToString()
+							   + ' ' + PressedButton[0].ToString()
+							   + ' ' + this.Judge[0].ToString());
 		}
 		if(network.LocalPlayer[1]) {
-			GameObject.Find("BattleManager").GetComponent<BattleManager>()
-				.DataQueue[1].Enqueue(new BattleManager.Data{
+			battleManager.DataQueue[1].Enqueue(new BattleManager.Data{
 					Id = this.Id,
 					Judge = this.Judge[1],
 					Button = this.PressedButton[1]
 				});
 		}
 		else {
-			network.SendString('1'
-							   + " " + Id.ToString()
-							   + " " + PressedButton[1].ToString()
-							   + " " + this.Judge[1].ToString());
+			network.SendString("1"
+							   + ' ' + Id.ToString()
+							   + ' ' + PressedButton[1].ToString()
+							   + ' ' + this.Judge[1].ToString());
 		}
 		// wait call DoBattle after 100ms
-		BattleManager battleManager
-			= GameObject.Find("BattleManager").GetComponent<BattleManager>();
-		battleManager.StartCoroutine(battleManager.DoBattle(this.Id));
+		battleManager.StartCoroutine(battleManager.DoBattle(this.Id,
+															this.Flip));
 	}
 }
