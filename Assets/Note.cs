@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 
 public class Note{
-	public const uint TIME_MARGIN = 500000;
 	public enum Button {NONE, RED, BLUE, GREEN};
+	
+	public const uint TIME_MARGIN = 500000;
+	public static readonly KeyCode[,] ButtonTable
+		= {{KeyCode.None, KeyCode.A, KeyCode.S, KeyCode.D},
+		   {KeyCode.None, KeyCode.J, KeyCode.K, KeyCode.L}};
 
 	public uint Id; // Id starts from 1
 					// Id number 0 refers to flipping attacker

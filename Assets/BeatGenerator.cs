@@ -54,11 +54,11 @@ public class BeatGenerator : MonoBehaviour {
 			if(n.IsValid && n.PressedButton[0] == Note.Button.NONE) {
 				// found target note
 				// check input & set button for player 1
-				if(Input.GetKeyDown(KeyCode.A))
+				if(Input.GetKeyDown(Note.ButtonTable[0, (int)Note.Button.RED]))
 					n.Press(0, CurTime - StartTime, Note.Button.RED);
-				else if(Input.GetKeyDown(KeyCode.S))
+				else if(Input.GetKeyDown(Note.ButtonTable[0, (int)Note.Button.BLUE]))
 					n.Press(0, CurTime - StartTime, Note.Button.BLUE);
-				else if(Input.GetKeyDown(KeyCode.D))
+				else if(Input.GetKeyDown(Note.ButtonTable[0, (int)Note.Button.GREEN]))
 					n.Press(0, CurTime - StartTime, Note.Button.GREEN);
 				break;
 			}
@@ -68,11 +68,11 @@ public class BeatGenerator : MonoBehaviour {
 			if(n.IsValid && n.PressedButton[1] == Note.Button.NONE) {
 				// found target note
 				// check input & set button for player 2
-				if(Input.GetKeyDown(KeyCode.J))
+				if(Input.GetKeyDown(Note.ButtonTable[1, (int)Note.Button.RED]))
 					n.Press(1, CurTime - StartTime, Note.Button.RED);
-				else if(Input.GetKeyDown(KeyCode.K))
+				else if(Input.GetKeyDown(Note.ButtonTable[1, (int)Note.Button.BLUE]))
 					n.Press(1, CurTime - StartTime, Note.Button.BLUE);
-				else if(Input.GetKeyDown(KeyCode.L))
+				else if(Input.GetKeyDown(Note.ButtonTable[1, (int)Note.Button.GREEN]))
 					n.Press(1, CurTime - StartTime, Note.Button.GREEN);
 				break;
 			}

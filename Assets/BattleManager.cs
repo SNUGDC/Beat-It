@@ -61,7 +61,7 @@ public class BattleManager : MonoBehaviour {
 								   Player1Data.Button);
 		JudgeDisplayer[1].SetJudge(Player2Data.Judge / 10.0f,
 								   Player2Data.Button);
-		// core battle logic
+		// call BattleCore
 		Player Attacker = (this.AttackerIndex == 0) ? Player[0] : Player[1];
 		Player Defender = (this.AttackerIndex == 0) ? Player[1] : Player[0];
 		BattleManager.Data AttackData = (this.AttackerIndex == 0)
@@ -70,17 +70,25 @@ public class BattleManager : MonoBehaviour {
 		BattleManager.Data DefendData = (this.AttackerIndex == 0)
 										? Player2Data
 										: Player1Data;
-		if(AttackData.Button != Note.Button.NONE) {
-			if(AttackData.Button == DefendData.Button
-			   && AttackData.Judge < DefendData.Judge) {
-				Defender.IncreaseSp(10);
+		BattleCore(Attacker, AttackData, Defender, DefendData);
+
+		// post-battle logic
+		if(flip) FlipAttacker();
+	}
+
+	// core battle logic
+	private void BattleCore(Player attacker, BattleManager.Data attackData,
+							Player defender, BattleManager.Data defendData) {
+		if(attackData.Button != Note.Button.NONE) {
+			if(attackData.Button == defendData.Button
+			   && attackData.Judge < defendData.Judge) {
+				defender.IncreaseSp(10);
 			}
 			else {
-				Defender.IncreaseHp(-10);
-				Attacker.IncreaseSp(10);
+				defender.IncreaseHp(-10);
+				attacker.IncreaseSp(10);
 			}
 		}
-		if(flip) FlipAttacker();
 	}
 
 	public void FlipAttacker() {

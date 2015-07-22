@@ -405,8 +405,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a115c46fa21fe274d922335a5c99e62d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HpBar: {fileID: 492019563}
-  SpBar: {fileID: 2057258671}
+  HpBar: {fileID: 492019564}
+  SpBar: {fileID: 2057258673}
   Hp: 0
   Sp: 0
 --- !u!1 &820526521
@@ -1161,8 +1161,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a115c46fa21fe274d922335a5c99e62d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HpBar: {fileID: 1267636861}
-  SpBar: {fileID: 1679132972}
+  HpBar: {fileID: 1267636862}
+  SpBar: {fileID: 1679132973}
   Hp: 0
   Sp: 0
 --- !u!1 &1941678561
