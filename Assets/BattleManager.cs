@@ -15,10 +15,15 @@ public class BattleManager : MonoBehaviour {
 	public JudgeDisplayer[] JudgeDisplayer;
 	public Queue<BattleManager.Data>[] DataQueue;
 
+	private Note.Button LastButton;
+	private uint CurrentCombo;
 	private int AttackerIndex;
 
 	void Start () {
-		this.AttackerIndex = 0;
+		this.LastButton = Note.Button.NONE;
+		this.CurrentCombo = 0;
+		this.AttackerIndex = 1;
+		FlipAttacker();
 		DataQueue = new Queue<BattleManager.Data>[2] {
 			new Queue<BattleManager.Data>(),
 			new Queue<BattleManager.Data>()
@@ -61,7 +66,8 @@ public class BattleManager : MonoBehaviour {
 								   Player1Data.Button);
 		JudgeDisplayer[1].SetJudge(Player2Data.Judge / 10.0f,
 								   Player2Data.Button);
-		// core battle logic
+
+		// assign basic variables
 		Player Attacker = (this.AttackerIndex == 0) ? Player[0] : Player[1];
 		Player Defender = (this.AttackerIndex == 0) ? Player[1] : Player[0];
 		BattleManager.Data AttackData = (this.AttackerIndex == 0)
@@ -70,21 +76,87 @@ public class BattleManager : MonoBehaviour {
 		BattleManager.Data DefendData = (this.AttackerIndex == 0)
 										? Player2Data
 										: Player1Data;
-		if(AttackData.Button != Note.Button.NONE) {
-			if(AttackData.Button == DefendData.Button
-			   && AttackData.Judge < DefendData.Judge) {
-				Defender.IncreaseSp(10);
-			}
-			else {
-				Defender.IncreaseHp(-10);
-				Attacker.IncreaseSp(10);
-			}
+
+		// calculate combo
+		if(AttackData.Button != Note.Button.NONE
+		   && AttackData.Button == this.LastButton){
+			CurrentCombo++;
+			CurrentCombo %= Attacker.GetAttackSkill(AttackData.Button)
+									.TurnLength;
 		}
+		else {
+			CurrentCombo = 0;
+		}
+
+		// call BattleCore
+		BattleCore(Attacker, AttackData, Defender, DefendData);
+
+		// post-battle logic
+		this.LastButton = AttackData.Button;
 		if(flip) FlipAttacker();
 	}
 
+	// core battle logic
+	private void BattleCore(Player attacker, BattleManager.Data attackData,
+							Player defender, BattleManager.Data defendData) {
+		AttackSkill attackerSkill = attacker.GetAttackSkill(attackData.Button);
+		DefendSkill defenderSkill = defender.GetDefendSkill(defendData.Button);
+		DefendSkill.DefendState defendResult;
+		if(defendData.Button == Note.Button.NONE) {
+			defendResult = DefendSkill.DefendState.HIT;
+		}
+		else if(attackData.Button == Note.Button.NONE) {
+			defendResult = DefendSkill.DefendState.GUARD;
+		}
+		else {
+			defendResult
+				= defenderSkill.DoDefend(attackerSkill.Name,
+										 this.CurrentCombo,
+										 attackData.Judge < defendData.Judge);
+		}
+		switch(defendResult) {
+			case DefendSkill.DefendState.GUARD : {
+				try {
+					defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
+										* (1 - defenderSkill.DefendRate));
+				} catch {}
+				try {
+					attacker.DecreaseHp(defenderSkill.Damage);
+				} catch {}
+				break;
+			}
+			case DefendSkill.DefendState.CANCEL : {
+				defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
+									* (1 - defenderSkill.DefendRate));
+				attacker.DecreaseHp(defenderSkill.Damage);
+				this.CurrentCombo = 0;
+				break;
+			}
+			case DefendSkill.DefendState.HIT : {
+				try {
+					defender.DecreaseHp(attackerSkill.Damage[CurrentCombo]);
+				} catch {}
+				break;
+			}
+			default : break;
+		}
+	}
+
 	public void FlipAttacker() {
-		if(this.AttackerIndex == 0) this.AttackerIndex = 1;
-		else						this.AttackerIndex = 0;
+		if(this.AttackerIndex == 0) {
+			this.AttackerIndex = 1;
+			Player[0].GetComponent<SpriteRenderer>().material.color
+				= Color.white;
+			Player[1].GetComponent<SpriteRenderer>().material.color
+				= Color.red;
+		}
+		else {
+			this.AttackerIndex = 0;
+			Player[1].GetComponent<SpriteRenderer>().material.color
+				= Color.white;
+			Player[0].GetComponent<SpriteRenderer>().material.color
+				= Color.red;
+		}
+		this.CurrentCombo = 0;
 	}
 }
