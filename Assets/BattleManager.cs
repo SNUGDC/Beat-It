@@ -22,7 +22,8 @@ public class BattleManager : MonoBehaviour {
 	void Start () {
 		this.LastButton = Note.Button.NONE;
 		this.CurrentCombo = 0;
-		this.AttackerIndex = 0;
+		this.AttackerIndex = 1;
+		FlipAttacker();
 		DataQueue = new Queue<BattleManager.Data>[2] {
 			new Queue<BattleManager.Data>(),
 			new Queue<BattleManager.Data>()
@@ -95,15 +96,28 @@ public class BattleManager : MonoBehaviour {
 							Player defender, BattleManager.Data defendData) {
 		AttackSkill attackerSkill = attacker.GetAttackSkill(attackData.Button);
 		DefendSkill defenderSkill = defender.GetDefendSkill(defendData.Button);
-		DefendSkill.DefendState defendResult
-			= defenderSkill.DoDefend(attackerSkill.Name,
-									 this.CurrentCombo,
-									 attackData.Judge < defendData.Judge);
+		DefendSkill.DefendState defendResult;
+		if(defendData.Button == Note.Button.NONE) {
+			defendResult = DefendSkill.DefendState.HIT;
+		}
+		else if(attackData.Button == Note.Button.NONE) {
+			defendResult = DefendSkill.DefendState.GUARD;
+		}
+		else {
+			defendResult
+				= defenderSkill.DoDefend(attackerSkill.Name,
+										 this.CurrentCombo,
+										 attackData.Judge < defendData.Judge);
+		}
 		switch(defendResult) {
 			case DefendSkill.DefendState.GUARD : {
-				defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
-									* (1 - defenderSkill.DefendRate));
-				attacker.DecreaseHp(defenderSkill.Damage);
+				try {
+					defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
+										* (1 - defenderSkill.DefendRate));
+				} catch {}
+				try {
+					attacker.DecreaseHp(defenderSkill.Damage);
+				} catch {}
 				break;
 			}
 			case DefendSkill.DefendState.CANCEL : {
@@ -114,7 +128,9 @@ public class BattleManager : MonoBehaviour {
 				break;
 			}
 			case DefendSkill.DefendState.HIT : {
-				defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]);
+				try {
+					defender.DecreaseHp(attackerSkill.Damage[CurrentCombo]);
+				} catch {}
 				break;
 			}
 			default : break;
@@ -122,8 +138,20 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	public void FlipAttacker() {
-		if(this.AttackerIndex == 0) this.AttackerIndex = 1;
-		else						this.AttackerIndex = 0;
+		if(this.AttackerIndex == 0) {
+			this.AttackerIndex = 1;
+			Player[0].GetComponent<SpriteRenderer>().material.color
+				= Color.white;
+			Player[1].GetComponent<SpriteRenderer>().material.color
+				= Color.red;
+		}
+		else {
+			this.AttackerIndex = 0;
+			Player[1].GetComponent<SpriteRenderer>().material.color
+				= Color.white;
+			Player[0].GetComponent<SpriteRenderer>().material.color
+				= Color.red;
+		}
 		this.CurrentCombo = 0;
 	}
 }

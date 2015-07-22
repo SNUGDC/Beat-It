@@ -14,8 +14,12 @@ public class Player : MonoBehaviour {
 		this.HpBar.text = this.Hp.ToString();
 		Sp = 0;
 		this.SpBar.text = this.Sp.ToString();
-		AttackSkillList = new AttackSkill[3];
-		DefendSkillList = new DefendSkill[3];
+		AttackSkillList = new AttackSkill[3] {
+			new AttackSkill(), new AttackSkill(), new AttackSkill()
+		};
+		DefendSkillList = new DefendSkill[3] {
+			new DefendSkill(), new DefendSkill(), new DefendSkill()
+		};
 		SetSkill("none"); // TODO : remove this
 	}
 	
