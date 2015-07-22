@@ -66,7 +66,8 @@ public class BattleManager : MonoBehaviour {
 								   Player1Data.Button);
 		JudgeDisplayer[1].SetJudge(Player2Data.Judge / 10.0f,
 								   Player2Data.Button);
-		// call BattleCore
+
+		// assign basic variables
 		Player Attacker = (this.AttackerIndex == 0) ? Player[0] : Player[1];
 		Player Defender = (this.AttackerIndex == 0) ? Player[1] : Player[0];
 		BattleManager.Data AttackData = (this.AttackerIndex == 0)
@@ -75,9 +76,8 @@ public class BattleManager : MonoBehaviour {
 		BattleManager.Data DefendData = (this.AttackerIndex == 0)
 										? Player2Data
 										: Player1Data;
-		BattleCore(Attacker, AttackData, Defender, DefendData);
 
-		// post-battle logic
+		// calculate combo
 		if(AttackData.Button != Note.Button.NONE
 		   && AttackData.Button == this.LastButton){
 			CurrentCombo++;
@@ -87,6 +87,11 @@ public class BattleManager : MonoBehaviour {
 		else {
 			CurrentCombo = 0;
 		}
+
+		// call BattleCore
+		BattleCore(Attacker, AttackData, Defender, DefendData);
+
+		// post-battle logic
 		this.LastButton = AttackData.Button;
 		if(flip) FlipAttacker();
 	}
