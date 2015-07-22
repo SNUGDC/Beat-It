@@ -12,7 +12,7 @@ public class NoteMover : MonoBehaviour {
 	
 	void Update() {
 		float speed = Camera.main.orthographicSize * 16 / 9
-					  / NoteDelay * Time.deltaTime;
+					  / NoteMover.NoteDelay * Time.deltaTime;
 		LeftObject.transform.Translate(speed, 0, 0);
 		RightObject.transform.Translate(-speed, 0, 0);
 		if(LeftObject.transform.position.x >= 0) {
