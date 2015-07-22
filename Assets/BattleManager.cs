@@ -15,9 +15,13 @@ public class BattleManager : MonoBehaviour {
 	public JudgeDisplayer[] JudgeDisplayer;
 	public Queue<BattleManager.Data>[] DataQueue;
 
+	private Note.Button LastButton;
+	private uint CurrentCombo;
 	private int AttackerIndex;
 
 	void Start () {
+		this.LastButton = Note.Button.NONE;
+		this.CurrentCombo = 0;
 		this.AttackerIndex = 0;
 		DataQueue = new Queue<BattleManager.Data>[2] {
 			new Queue<BattleManager.Data>(),
@@ -73,26 +77,53 @@ public class BattleManager : MonoBehaviour {
 		BattleCore(Attacker, AttackData, Defender, DefendData);
 
 		// post-battle logic
+		if(AttackData.Button != Note.Button.NONE
+		   && AttackData.Button == this.LastButton){
+			CurrentCombo++;
+			CurrentCombo %= Attacker.GetAttackSkill(AttackData.Button)
+									.TurnLength;
+		}
+		else {
+			CurrentCombo = 0;
+		}
+		this.LastButton = AttackData.Button;
 		if(flip) FlipAttacker();
 	}
 
 	// core battle logic
 	private void BattleCore(Player attacker, BattleManager.Data attackData,
 							Player defender, BattleManager.Data defendData) {
-		if(attackData.Button != Note.Button.NONE) {
-			if(attackData.Button == defendData.Button
-			   && attackData.Judge < defendData.Judge) {
-				defender.IncreaseSp(10);
+		AttackSkill attackerSkill = attacker.GetAttackSkill(attackData.Button);
+		DefendSkill defenderSkill = defender.GetDefendSkill(defendData.Button);
+		DefendSkill.DefendState defendResult
+			= defenderSkill.DoDefend(attackerSkill.Name,
+									 this.CurrentCombo,
+									 attackData.Judge < defendData.Judge);
+		switch(defendResult) {
+			case DefendSkill.DefendState.GUARD : {
+				defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
+									* (1 - defenderSkill.DefendRate));
+				attacker.DecreaseHp(defenderSkill.Damage);
+				break;
 			}
-			else {
-				defender.IncreaseHp(-10);
-				attacker.IncreaseSp(10);
+			case DefendSkill.DefendState.CANCEL : {
+				defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
+									* (1 - defenderSkill.DefendRate));
+				attacker.DecreaseHp(defenderSkill.Damage);
+				this.CurrentCombo = 0;
+				break;
 			}
+			case DefendSkill.DefendState.HIT : {
+				defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]);
+				break;
+			}
+			default : break;
 		}
 	}
 
 	public void FlipAttacker() {
 		if(this.AttackerIndex == 0) this.AttackerIndex = 1;
 		else						this.AttackerIndex = 0;
+		this.CurrentCombo = 0;
 	}
 }

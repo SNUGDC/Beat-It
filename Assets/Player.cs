@@ -43,12 +43,12 @@ public class Player : MonoBehaviour {
 		DefendSkillList[0].DefendRate = 0.5f;
 		DefendSkillList[0].Damage = 0;
 		DefendSkillList[0].DoDefend
-			= (string attackSkill, int turn, bool defendableJudge) => {
+			= (string attackSkill, uint turn, bool defendableJudge) => {
 				switch(attackSkill) {
 					case "Power" :
 						return (turn == 0)
 							   ? DefendSkill.DefendState.GUARD
-							   : DefendSkill.DefendState.FAIL;
+							   : DefendSkill.DefendState.HIT;
 					case "Consecutive" :
 						return DefendSkill.DefendState.GUARD;
 					case "Normal" :
@@ -61,18 +61,18 @@ public class Player : MonoBehaviour {
 		DefendSkillList[1].DefendRate = 1.0f;
 		DefendSkillList[1].Damage = 0;
 		DefendSkillList[1].DoDefend
-			= (string attackSkill, int turn, bool defendableJudge) => {
+			= (string attackSkill, uint turn, bool defendableJudge) => {
 				switch(attackSkill) {
 					case "Power" :
 						return (turn == 0 || defendableJudge == true)
 							   ? DefendSkill.DefendState.GUARD
-							   : DefendSkill.DefendState.FAIL;
+							   : DefendSkill.DefendState.HIT;
 					case "Consecutive" :
 						return (defendableJudge == true)
 							   ? DefendSkill.DefendState.CANCEL
-							   : DefendSkill.DefendState.FAIL;
+							   : DefendSkill.DefendState.HIT;
 					case "Normal" :
-						return DefendSkill.DefendState.FAIL;
+						return DefendSkill.DefendState.HIT;
 					default :
 						return DefendSkill.DefendState.GUARD;
 				}
@@ -81,18 +81,18 @@ public class Player : MonoBehaviour {
 		DefendSkillList[2].DefendRate = 1.0f;
 		DefendSkillList[2].Damage = 20;
 		DefendSkillList[2].DoDefend
-			= (string attackSkill, int turn, bool defendableJudge) => {
+			= (string attackSkill, uint turn, bool defendableJudge) => {
 				switch(attackSkill) {
 					case "Power" :
 						return (turn == 0)
 							   ? DefendSkill.DefendState.CANCEL
-							   : DefendSkill.DefendState.FAIL;
+							   : DefendSkill.DefendState.HIT;
 					case "Consecutive" :
-						return DefendSkill.DefendState.FAIL;
+						return DefendSkill.DefendState.HIT;
 					case "Normal" :
 						return (defendableJudge == true)
-							   ? DefendSkill.DefendState.GUARD
-							   : DefendSkill.DefendState.FAIL;
+							   ? DefendSkill.DefendState.CANCEL
+							   : DefendSkill.DefendState.HIT;
 					default :
 						return DefendSkill.DefendState.GUARD;
 				}
@@ -117,9 +117,14 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	public void IncreaseHp(int diff) {
-		this.Hp += diff;
+	public void DecreaseHp(int diff) {
+		this.Hp -= diff;
 		this.HpBar.text = this.Hp.ToString();
+	}
+
+	// shortcut for float argument
+	public void DecreaseHp(float diff) {
+		this.DecreaseHp((int)diff);
 	}
 
 	public void IncreaseSp(int diff) {
