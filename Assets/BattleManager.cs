@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,6 +15,7 @@ public class BattleManager : MonoBehaviour {
 	public Player[] Player;
 	public JudgeDisplayer[] JudgeDisplayer;
 	public Queue<BattleManager.Data>[] DataQueue;
+	public Text ComboText;
 
 	private Note.Button LastButton;
 	private uint CurrentCombo;
@@ -87,6 +89,9 @@ public class BattleManager : MonoBehaviour {
 		else {
 			CurrentCombo = 0;
 		}
+		ComboText.text = (AttackData.Button == Note.Button.NONE)
+						 ? "0 Combo"
+						 : (CurrentCombo + 1).ToString() + " Combo";
 
 		// call BattleCore
 		BattleCore(Attacker, AttackData, Defender, DefendData);

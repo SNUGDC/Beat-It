@@ -136,6 +136,7 @@ MonoBehaviour:
   JudgeDisplayer:
   - {fileID: 1941678565}
   - {fileID: 820526525}
+  ComboText: {fileID: 1760593543}
 --- !u!1 &316819877
 GameObject:
   m_ObjectHideFlags: 0
