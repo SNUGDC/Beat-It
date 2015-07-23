@@ -16,6 +16,7 @@ public class BattleManager : MonoBehaviour {
 	public JudgeDisplayer[] JudgeDisplayer;
 	public Queue<BattleManager.Data>[] DataQueue;
 	public Text ComboText;
+	public Text BattleText;
 
 	private Note.Button LastButton;
 	private uint CurrentCombo;
@@ -119,6 +120,11 @@ public class BattleManager : MonoBehaviour {
 										 this.CurrentCombo,
 										 attackData.Judge < defendData.Judge);
 		}
+		if(attackData.Button == Note.Button.NONE
+		   && defendData.Button == Note.Button.NONE) {
+			BattleText.text = "";
+		}
+		else	BattleText.text = defendResult.ToString();
 		switch(defendResult) {
 			case DefendSkill.DefendState.GUARD : {
 				try {
