@@ -43,6 +43,8 @@ public class Note{
 			float tempJudge = 1 - System.Math.Abs(time - this.Time)
 								  / (float)(TIME_MARGIN);
 			this.Judge[player] = (uint)(tempJudge * 1000);
+			GameObject.Find("BattleManager").GetComponent<BattleManager>()
+				.GetReady(player, button);
 		}
 	}
 

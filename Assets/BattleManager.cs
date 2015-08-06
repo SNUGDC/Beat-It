@@ -1,10 +1,11 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
 public class BattleManager : MonoBehaviour {
 	public const float NETWORK_DELAY = 0.1f;
+	public const float FLIP_DELAY = 0.6f;
 
 	public struct Data {
 		public uint Id;
@@ -25,8 +26,11 @@ public class BattleManager : MonoBehaviour {
 	void Start () {
 		this.LastButton = Note.Button.NONE;
 		this.CurrentCombo = 0;
-		this.AttackerIndex = 1;
-		FlipAttacker();
+		this.AttackerIndex = 0;
+		Player[1].GetComponent<SpriteRenderer>().material.color
+			= Color.white;
+		Player[0].GetComponent<SpriteRenderer>().material.color
+			= Color.red;
 		DataQueue = new Queue<BattleManager.Data>[2] {
 			new Queue<BattleManager.Data>(),
 			new Queue<BattleManager.Data>()
@@ -34,6 +38,18 @@ public class BattleManager : MonoBehaviour {
 	}
 	
 	void Update () {
+	}
+
+	public void GetReady(int playerIndex, Note.Button but) {
+		Player targetPlayer = Player[playerIndex];
+		if(playerIndex == AttackerIndex) {
+			targetPlayer.GetAttackSkill(but).PlayAnim(targetPlayer.Anim,
+													  this.CurrentCombo);
+		}
+		else {
+			targetPlayer.GetDefendSkill(but).PlayAnim(targetPlayer.Anim,
+													  this.CurrentCombo);
+		}
 	}
 
 	public IEnumerator DoBattle(uint id, bool flip) {
@@ -82,7 +98,9 @@ public class BattleManager : MonoBehaviour {
 
 		// calculate combo
 		if(AttackData.Button != Note.Button.NONE
-		   && AttackData.Button == this.LastButton){
+		   && (AttackData.Button == this.LastButton
+			   || this.LastButton == Note.Button.NONE)
+		  ){
 			CurrentCombo++;
 			CurrentCombo %= Attacker.GetAttackSkill(AttackData.Button)
 									.TurnLength;
@@ -99,7 +117,7 @@ public class BattleManager : MonoBehaviour {
 
 		// post-battle logic
 		this.LastButton = AttackData.Button;
-		if(flip) FlipAttacker();
+		if(flip) StartCoroutine(FlipAttacker());
 	}
 
 	// core battle logic
@@ -128,32 +146,55 @@ public class BattleManager : MonoBehaviour {
 		switch(defendResult) {
 			case DefendSkill.DefendState.GUARD : {
 				try {
+					defender.Anim.SetTrigger("action");
 					defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
 										* (1 - defenderSkill.DefendRate));
 				} catch {}
 				try {
+					attacker.Anim.SetTrigger("action");
 					attacker.DecreaseHp(defenderSkill.Damage);
 				} catch {}
 				break;
 			}
 			case DefendSkill.DefendState.CANCEL : {
+				defender.Anim.SetTrigger("action");
 				defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
 									* (1 - defenderSkill.DefendRate));
+				attacker.Anim.SetTrigger("hit");
 				attacker.DecreaseHp(defenderSkill.Damage);
 				this.CurrentCombo = 0;
 				break;
 			}
 			case DefendSkill.DefendState.HIT : {
 				try {
+					defender.Anim.SetTrigger("hit");
 					defender.DecreaseHp(attackerSkill.Damage[CurrentCombo]);
 				} catch {}
+				if(attackData.Button != Note.Button.NONE){
+					attacker.Anim.SetTrigger("action");
+				}
+				else{
+					attacker.Anim.SetTrigger("hit");
+				}
 				break;
 			}
 			default : break;
 		}
 	}
 
-	public void FlipAttacker() {
+	public IEnumerator FlipAttacker() {
+		foreach(AnimatorControllerParameter param
+				in Player[0].Anim.parameters) {
+			Player[0].Anim.ResetTrigger(param.name);
+		}
+		foreach(AnimatorControllerParameter param
+				in Player[1].Anim.parameters) {
+			Player[1].Anim.ResetTrigger(param.name);
+		}
+		Player[0].Anim.SetTrigger("reset");
+		Player[1].Anim.SetTrigger("reset");
+		yield return new WaitForSeconds(BattleManager.NETWORK_DELAY);
+
 		if(this.AttackerIndex == 0) {
 			this.AttackerIndex = 1;
 			Player[0].GetComponent<SpriteRenderer>().material.color

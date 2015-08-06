@@ -2,6 +2,8 @@
 using System.Collections;
 
 public class Player : MonoBehaviour {
+	public delegate void PlayAnim(Animator target, uint combo);
+	public Animator Anim;
 	public TextMesh HpBar;
 	public TextMesh SpBar;
 	public int Hp;
@@ -34,14 +36,34 @@ public class Player : MonoBehaviour {
 		AttackSkillList[0].IsLongButton = false; // TODO : change to true
 		AttackSkillList[0].TurnLength = 2;
 		AttackSkillList[0].Damage = new uint[2] {0, 100};
+		AttackSkillList[0].PlayAnim
+			= (Animator target, uint combo) => {
+				if(combo == 0) target.SetTrigger("strong_start");
+				else		   target.SetTrigger("strong_success");
+				//Debug.Log("Strong!");
+			};
 		AttackSkillList[1].Name = "Consecutive";
 		AttackSkillList[1].IsLongButton = false;
 		AttackSkillList[1].TurnLength = 3;
 		AttackSkillList[1].Damage = new uint[3] {30, 40, 70};
+		AttackSkillList[1].PlayAnim
+			= (Animator target, uint combo) => {
+				switch(combo) {
+					case 0 : target.SetTrigger("consecutive1"); break;
+					case 1 : target.SetTrigger("consecutive2"); break;
+					default : target.SetTrigger("consecutive3"); break;
+				}
+				//Debug.Log("Consecutive!");
+			};
 		AttackSkillList[2].Name = "Normal";
 		AttackSkillList[2].IsLongButton = false;
 		AttackSkillList[2].TurnLength = 1;
 		AttackSkillList[2].Damage = new uint[1] {20};
+		AttackSkillList[2].PlayAnim
+			= (Animator target, uint combo) => {
+				target.SetTrigger("normal");
+				//Debug.Log("Normal!");
+			};
 
 		DefendSkillList[0].Name = "Guard";
 		DefendSkillList[0].DefendRate = 0.5f;
@@ -60,6 +82,11 @@ public class Player : MonoBehaviour {
 					default :
 						return DefendSkill.DefendState.GUARD;
 				}
+			};
+		DefendSkillList[0].PlayAnim
+			= (Animator target, uint combo) => {
+				target.SetTrigger("guard");
+				//Debug.Log("Guard!");
 			};
 		DefendSkillList[1].Name = "Evade";
 		DefendSkillList[1].DefendRate = 1.0f;
@@ -81,6 +108,11 @@ public class Player : MonoBehaviour {
 						return DefendSkill.DefendState.GUARD;
 				}
 			};
+		DefendSkillList[1].PlayAnim
+			= (Animator target, uint combo) => {
+				target.SetTrigger("evade");
+				//Debug.Log("Evade!");
+			};
 		DefendSkillList[2].Name = "Cancel";
 		DefendSkillList[2].DefendRate = 1.0f;
 		DefendSkillList[2].Damage = 20;
@@ -100,6 +132,11 @@ public class Player : MonoBehaviour {
 					default :
 						return DefendSkill.DefendState.GUARD;
 				}
+			};
+		DefendSkillList[2].PlayAnim
+			= (Animator target, uint combo) => {
+				target.SetTrigger("cancel");
+				//Debug.Log("Cancel!");
 			};
 	}
 

@@ -8,4 +8,5 @@ public class DefendSkill {
 	public float DefendRate;
 	public uint Damage;
 	public DefendHandler DoDefend;
+	public Player.PlayAnim PlayAnim;
 }

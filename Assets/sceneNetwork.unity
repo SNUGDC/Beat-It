@@ -821,6 +821,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IpText: {fileID: 287013010}
+  LocalPlayer: 
 --- !u!4 &1229063338
 Transform:
   m_ObjectHideFlags: 0

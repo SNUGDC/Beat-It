@@ -26,7 +26,7 @@ public class BeatGenerator : MonoBehaviour {
 	void Start() {
 		// TODO : read beat data from file
 		for(int i = 1; i <= 100; ++i) {
-			Note newNote = new Note((uint)i, 1000000 * (i + 3));
+			Note newNote = new Note((uint)i, 1500000 * (i + 3));
 			if(i % 5 == 0) newNote.Flip = true;
 			NoteList.Enqueue(newNote);
 		}
