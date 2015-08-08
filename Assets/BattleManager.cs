@@ -23,7 +23,7 @@ public class BattleManager : MonoBehaviour {
 	private uint CurrentCombo;
 	private int AttackerIndex;
 
-	void Start () {
+	private void Start () {
 		this.LastButton = Note.Button.NONE;
 		this.CurrentCombo = 0;
 		this.AttackerIndex = 0;
@@ -37,7 +37,7 @@ public class BattleManager : MonoBehaviour {
 		};
 	}
 	
-	void Update () {
+	private void Update () {
 	}
 
 	public void GetReady(int playerIndex, Note.Button but) {
@@ -56,31 +56,9 @@ public class BattleManager : MonoBehaviour {
 
 	public IEnumerator DoBattle(uint id, bool flip) {
 		yield return new WaitForSeconds(BattleManager.NETWORK_DELAY);
-		// dequeue one note from DataQueue[0]
-		BattleManager.Data Player1Data;
-		if(DataQueue[0].Count != 0 && DataQueue[0].Peek().Id == id) {
-			Player1Data = DataQueue[0].Dequeue();
-		}
-		else {
-			Player1Data = new BattleManager.Data {
-				Id = id, Judge = 0, Button = Note.Button.NONE
-			};
-			if(DataQueue[0].Count != 0) Debug.Log(DataQueue[0].Peek().Id);
-			else Debug.Log(id + " Not Found!");
-		}
-
-		// dequeue one note from Dataqueue[1]
-		BattleManager.Data Player2Data;
-		if(DataQueue[1].Count != 0 && DataQueue[1].Peek().Id == id) {
-			Player2Data = DataQueue[1].Dequeue();
-		}
-		else {
-			Player2Data = new BattleManager.Data {
-				Id = id, Judge = 0, Button = Note.Button.NONE
-			};
-			if(DataQueue[1].Count != 0) Debug.Log(DataQueue[1].Peek().Id);
-			else Debug.Log(id + " Not Found!");
-		}
+		
+		BattleManager.Data Player1Data = GetData(0, id);
+		BattleManager.Data Player2Data = GetData(1, id);
 
 		// set judge text
 		JudgeDisplayer[0].SetJudge(Player1Data.Judge / 10.0f,
@@ -210,5 +188,20 @@ public class BattleManager : MonoBehaviour {
 				= Color.red;
 		}
 		this.CurrentCombo = 0;
+	}
+	
+	// dequeue one note from DataQueue
+	// if no data exists or id dismatches, return initialized data
+	private BattleManager.Data GetData(int player, uint id) {
+		if(DataQueue[player].Count != 0 && DataQueue[player].Peek().Id == id) {
+			return DataQueue[player].Dequeue();
+		}
+		else {
+			if(DataQueue[0].Count != 0) Debug.Log(DataQueue[0].Peek().Id);
+			else Debug.Log(id + " Not Found!");
+			return new BattleManager.Data {
+				Id = id, Judge = 0, Button = Note.Button.NONE
+			};
+		}
 	}
 }
