@@ -44,7 +44,7 @@ public class BattleManager : MonoBehaviour {
 		Player targetPlayer = Player[playerIndex];
 		if(playerIndex == AttackerIndex) {
 			AttackSkill skill = targetPlayer.GetAttackSkill(but);
-			uint combo = (this.CurrentCombo + 1) % skill.TurnLength + 1;
+			uint combo = this.CurrentCombo % skill.TurnLength + 1;
 			skill.PlayAnim(targetPlayer.Anim, combo);
 		}
 		else {
@@ -81,12 +81,13 @@ public class BattleManager : MonoBehaviour {
 		   && (AttackData.Button == this.LastButton
 			   || this.LastButton == Note.Button.NONE)
 		  ){
-			CurrentCombo++;
-			CurrentCombo %= Attacker.GetAttackSkill(AttackData.Button)
-									.TurnLength;
+		  	this.CurrentCombo = this.CurrentCombo
+		  						% Attacker.GetAttackSkill(AttackData.Button)
+							 			  .TurnLength
+								+ 1;
 		}
 		else {
-			CurrentCombo = 0;
+			this.CurrentCombo = 0;
 		}
 		ComboText.text = CurrentCombo.ToString() + " Combo";
 
@@ -160,7 +161,10 @@ public class BattleManager : MonoBehaviour {
 		}
 	}
 
+	// flip attacking player
 	private IEnumerator FlipAttacker() {
+		yield return new WaitForSeconds(BattleManager.FLIP_DELAY);
+		// reset all triggers to avoid unwanted animation
 		foreach(AnimatorControllerParameter param
 				in Player[0].Anim.parameters) {
 			Player[0].Anim.ResetTrigger(param.name);
@@ -169,9 +173,9 @@ public class BattleManager : MonoBehaviour {
 				in Player[1].Anim.parameters) {
 			Player[1].Anim.ResetTrigger(param.name);
 		}
-		Player[0].Anim.SetTrigger("reset");
-		Player[1].Anim.SetTrigger("reset");
-		yield return new WaitForSeconds(BattleManager.NETWORK_DELAY);
+		// force playing basic animation
+		Player[0].Anim.Play("basic");
+		Player[1].Anim.Play("basic");
 
 		if(this.AttackerIndex == 0) {
 			this.AttackerIndex = 1;
