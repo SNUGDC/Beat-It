@@ -131,27 +131,37 @@ public class BattleManager : MonoBehaviour {
 		switch(defendResult) {
 			case DefendSkill.DefendState.GUARD : {
 				// defender Guards attack, and attacker keeps attack
-				defender.Anim.SetTrigger("action");
-				defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
-									* (1 - defenderSkill.DefendRate));
-				attacker.Anim.SetTrigger("action");
-				attacker.DecreaseHp(defenderSkill.Damage);
+				try {
+					defender.Anim.SetTrigger("action");
+					defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo - 1]
+										* (1 - defenderSkill.DefendRate));
+				} catch {}
+				try {
+					attacker.Anim.SetTrigger("action");
+					attacker.DecreaseHp(defenderSkill.Damage);
+				} catch {}
 				break;
 			}
 			case DefendSkill.DefendState.CANCEL : {
 				// defender Guards attack, and attacker's combo is reset
-				defender.Anim.SetTrigger("action");
-				defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
-									* (1 - defenderSkill.DefendRate));
-				attacker.Anim.SetTrigger("hit");
-				attacker.DecreaseHp(defenderSkill.Damage);
+				try {
+					defender.Anim.SetTrigger("action");
+					defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo - 1]
+										* (1 - defenderSkill.DefendRate));
+				} catch {}
+				try {
+					attacker.Anim.SetTrigger("hit");
+					attacker.DecreaseHp(defenderSkill.Damage);
+				} catch {}
 				this.CurrentCombo = 0;
 				break;
 			}
 			case DefendSkill.DefendState.HIT : {
 				// attacker succeeded to hit defender
-				defender.Anim.SetTrigger("hit");
-				defender.DecreaseHp(attackerSkill.Damage[CurrentCombo]);
+				try {
+					defender.Anim.SetTrigger("hit");
+					defender.DecreaseHp(attackerSkill.Damage[CurrentCombo - 1]);
+				} catch {}
 				if(attackData.Button != Note.Button.NONE){
 					attacker.Anim.SetTrigger("action");
 				}
