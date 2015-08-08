@@ -96,7 +96,7 @@ public class Player : MonoBehaviour {
 							   : DefendSkill.DefendState.HIT;
 					case "Consecutive" :
 						return (defendableJudge)
-							   ? DefendSkill.DefendState.CANCEL
+							   ? DefendSkill.DefendState.GUARD
 							   : DefendSkill.DefendState.HIT;
 					case "Normal" :
 						return DefendSkill.DefendState.HIT;
