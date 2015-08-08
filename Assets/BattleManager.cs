@@ -17,7 +17,7 @@ public class BattleManager : MonoBehaviour {
 	public JudgeDisplayer[] JudgeDisplayer;
 	public Queue<BattleManager.Data>[] DataQueue;
 	public Text ComboText;
-	public Text BattleText;
+	public Text BattleText; // TODO : remove this
 
 	private Note.Button LastButton;
 	private uint CurrentCombo;
@@ -43,18 +43,20 @@ public class BattleManager : MonoBehaviour {
 	public void GetReady(int playerIndex, Note.Button but) {
 		Player targetPlayer = Player[playerIndex];
 		if(playerIndex == AttackerIndex) {
-			targetPlayer.GetAttackSkill(but).PlayAnim(targetPlayer.Anim,
-													  this.CurrentCombo);
+			AttackSkill skill = targetPlayer.GetAttackSkill(but);
+			uint combo = (this.CurrentCombo + 1) % skill.TurnLength + 1;
+			skill.PlayAnim(targetPlayer.Anim, combo);
 		}
 		else {
-			targetPlayer.GetDefendSkill(but).PlayAnim(targetPlayer.Anim,
-													  this.CurrentCombo);
+			DefendSkill skill = targetPlayer.GetDefendSkill(but);
+			uint combo = 1;
+			skill.PlayAnim(targetPlayer.Anim, combo);
 		}
 	}
 
 	public IEnumerator DoBattle(uint id, bool flip) {
 		yield return new WaitForSeconds(BattleManager.NETWORK_DELAY);
-		// dequeue one note from Dataqueue[0]
+		// dequeue one note from DataQueue[0]
 		BattleManager.Data Player1Data;
 		if(DataQueue[0].Count != 0 && DataQueue[0].Peek().Id == id) {
 			Player1Data = DataQueue[0].Dequeue();
@@ -180,7 +182,7 @@ public class BattleManager : MonoBehaviour {
 		}
 	}
 
-	public IEnumerator FlipAttacker() {
+	private IEnumerator FlipAttacker() {
 		foreach(AnimatorControllerParameter param
 				in Player[0].Anim.parameters) {
 			Player[0].Anim.ResetTrigger(param.name);
