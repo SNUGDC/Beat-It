@@ -38,7 +38,7 @@ public class Player : MonoBehaviour {
 		AttackSkillList[0].Damage = new uint[2] {0, 100};
 		AttackSkillList[0].PlayAnim
 			= (Animator target, uint combo) => {
-				if(combo == 0) target.Play("strong_ready_ready");
+				if(combo == 1) target.Play("strong_ready_ready");
 				else		   target.Play("strong_success_ready");
 			};
 		AttackSkillList[1].Name = "Consecutive";
@@ -48,8 +48,8 @@ public class Player : MonoBehaviour {
 		AttackSkillList[1].PlayAnim
 			= (Animator target, uint combo) => {
 				switch(combo) {
-					case 0 : target.Play("consecutive1_ready"); break;
-					case 1 : target.Play("consecutive2_ready"); break;
+					case 1 : target.Play("consecutive1_ready"); break;
+					case 2 : target.Play("consecutive2_ready"); break;
 					default : target.Play("consecutive3_ready"); break;
 				}
 			};

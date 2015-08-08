@@ -411,8 +411,6 @@ MonoBehaviour:
   Anim: {fileID: 527818938}
   HpBar: {fileID: 492019564}
   SpBar: {fileID: 2057258673}
-  Hp: 0
-  Sp: 0
 --- !u!95 &527818938
 Animator:
   serializedVersion: 3
@@ -1320,8 +1318,6 @@ MonoBehaviour:
   Anim: {fileID: 1784539077}
   HpBar: {fileID: 1267636862}
   SpBar: {fileID: 1679132973}
-  Hp: 0
-  Sp: 0
 --- !u!95 &1784539077
 Animator:
   serializedVersion: 3
