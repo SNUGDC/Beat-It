@@ -105,37 +105,41 @@ public class BattleManager : MonoBehaviour {
 		AttackSkill attackerSkill = attacker.GetAttackSkill(attackData.Button);
 		DefendSkill defenderSkill = defender.GetDefendSkill(defendData.Button);
 		DefendSkill.DefendState defendResult;
+		// if defender didn't press button, set result to HIT
 		if(defendData.Button == Note.Button.NONE) {
 			defendResult = DefendSkill.DefendState.HIT;
 		}
+		// if defender pressed button, but attacker didn't, set result to GUARD
 		else if(attackData.Button == Note.Button.NONE) {
 			defendResult = DefendSkill.DefendState.GUARD;
 		}
+		// both players pressed button
 		else {
 			defendResult
 				= defenderSkill.DoDefend(attackerSkill.Name,
 										 this.CurrentCombo,
-										 attackData.Judge < defendData.Judge);
+										 attackData.Judge <= defendData.Judge);
 		}
+		// TODO : remove this if-else block
+		// print result to BattleText
 		if(attackData.Button == Note.Button.NONE
 		   && defendData.Button == Note.Button.NONE) {
-			BattleText.text = "";
+			BattleText.text = "NONE";
 		}
 		else	BattleText.text = defendResult.ToString();
+
 		switch(defendResult) {
 			case DefendSkill.DefendState.GUARD : {
-				try {
-					defender.Anim.SetTrigger("action");
-					defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
-										* (1 - defenderSkill.DefendRate));
-				} catch {}
-				try {
-					attacker.Anim.SetTrigger("action");
-					attacker.DecreaseHp(defenderSkill.Damage);
-				} catch {}
+				// defender Guards attack, and attacker keeps attack
+				defender.Anim.SetTrigger("action");
+				defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
+									* (1 - defenderSkill.DefendRate));
+				attacker.Anim.SetTrigger("action");
+				attacker.DecreaseHp(defenderSkill.Damage);
 				break;
 			}
 			case DefendSkill.DefendState.CANCEL : {
+				// defender Guards attack, and attacker's combo is reset
 				defender.Anim.SetTrigger("action");
 				defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo]
 									* (1 - defenderSkill.DefendRate));
@@ -145,10 +149,9 @@ public class BattleManager : MonoBehaviour {
 				break;
 			}
 			case DefendSkill.DefendState.HIT : {
-				try {
-					defender.Anim.SetTrigger("hit");
-					defender.DecreaseHp(attackerSkill.Damage[CurrentCombo]);
-				} catch {}
+				// attacker succeeded to hit defender
+				defender.Anim.SetTrigger("hit");
+				defender.DecreaseHp(attackerSkill.Damage[CurrentCombo]);
 				if(attackData.Button != Note.Button.NONE){
 					attacker.Anim.SetTrigger("action");
 				}
