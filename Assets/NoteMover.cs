@@ -15,8 +15,11 @@ public class NoteMover : MonoBehaviour {
 					  / NoteMover.NoteDelay * Time.deltaTime;
 		LeftObject.transform.Translate(speed, 0, 0);
 		RightObject.transform.Translate(-speed, 0, 0);
+		// delete note from display
 		if(LeftObject.transform.position.x >= 0) {
-			NoteData.Kill(transform.parent.GetComponent<BeatGenerator>(), this);
+			NoteData.Kill();
+			Object.Destroy(this.gameObject);
+			transform.parent.GetComponent<BeatGenerator>().NoteList.Dequeue();
 		}
 	}
 }

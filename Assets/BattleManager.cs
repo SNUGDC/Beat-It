@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class BattleManager : MonoBehaviour {
-	public const float NETWORK_DELAY = 0.1f;
+	public const float NETWORK_DELAY = 0.05f;
 	public const float FLIP_DELAY = 0.6f;
 
 	public struct Data {
@@ -108,9 +108,7 @@ public class BattleManager : MonoBehaviour {
 		else {
 			CurrentCombo = 0;
 		}
-		ComboText.text = (AttackData.Button == Note.Button.NONE)
-						 ? "0 Combo"
-						 : (CurrentCombo + 1).ToString() + " Combo";
+		ComboText.text = CurrentCombo.ToString() + " Combo";
 
 		// call BattleCore
 		BattleCore(Attacker, AttackData, Defender, DefendData);

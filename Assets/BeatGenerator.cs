@@ -3,14 +3,15 @@ using System;
 using System.Collections.Generic;
 
 public class BeatGenerator : MonoBehaviour {
-	public Transform NotePrefab;
-	public BattleManager BattleManager;
+	public Transform NotePrefab; // prefab for note
+	public BattleManager BattleManager; // BattleManager object
 
-	public Queue<Note> NoteList = new Queue<Note>();
-	private int StartTime; // total time passed since start of music
+	public Queue<Note> NoteList = new Queue<Note>(); // List of Notes
+	private int StartTime; // Starting time of battle
 
+	// interpret input & put data into queue
 	public void OnSocketRead(string input) {
-		// socket format is
+		// message format is
 		// "player noteId judge button"
 		string[] splitInput = input.Split(' ');
 		int player = Convert.ToInt32(splitInput[0]);
@@ -20,14 +21,15 @@ public class BeatGenerator : MonoBehaviour {
 			Button = (Note.Button)Enum.Parse(typeof(Note.Button),
 													splitInput[3])
 		};
+		// add interpreted data into data queue
 		BattleManager.DataQueue[player].Enqueue(newData);
 	}
 
 	void Start() {
 		// TODO : read beat data from file
-		for(int i = 1; i <= 100; ++i) {
+		for(int i = 0; i <= 100; ++i) {
 			Note newNote = new Note((uint)i, 1500000 * (i + 3));
-			if(i % 5 == 0) newNote.Flip = true;
+			//if(i % 7 == 0) newNote.Flip = true;
 			NoteList.Enqueue(newNote);
 		}
 		StartTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
@@ -36,8 +38,8 @@ public class BeatGenerator : MonoBehaviour {
 	}
 
 	void Update() {
+		// calculate current time
 		int CurTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
-		// TODO : add loading beats from queue
 		// find first note in READY State & show at appropriate time
 		foreach(Note n in NoteList) {
 			if(!n.IsValid) {

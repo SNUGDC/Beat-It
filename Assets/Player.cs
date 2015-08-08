@@ -3,14 +3,14 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 	public delegate void PlayAnim(Animator target, uint combo);
-	public Animator Anim;
-	public TextMesh HpBar;
-	public TextMesh SpBar;
-	public int Hp;
-	public int Sp;
+	public Animator Anim; // Mechanim animator for this player
+	public TextMesh HpBar; // Hp Text
+	public TextMesh SpBar; // Sp Text
+	private int Hp;
+	private int Sp;
 	private AttackSkill[] AttackSkillList;
 	private DefendSkill[] DefendSkillList;
-	// Use this for initialization
+
 	void Start() {
 		Hp = 100;
 		this.HpBar.text = this.Hp.ToString();
@@ -38,9 +38,8 @@ public class Player : MonoBehaviour {
 		AttackSkillList[0].Damage = new uint[2] {0, 100};
 		AttackSkillList[0].PlayAnim
 			= (Animator target, uint combo) => {
-				if(combo == 0) target.SetTrigger("strong_start");
-				else		   target.SetTrigger("strong_success");
-				//Debug.Log("Strong!");
+				if(combo == 0) target.Play("strong_ready_ready");
+				else		   target.Play("strong_success_ready");
 			};
 		AttackSkillList[1].Name = "Consecutive";
 		AttackSkillList[1].IsLongButton = false;
@@ -49,11 +48,10 @@ public class Player : MonoBehaviour {
 		AttackSkillList[1].PlayAnim
 			= (Animator target, uint combo) => {
 				switch(combo) {
-					case 0 : target.SetTrigger("consecutive1"); break;
-					case 1 : target.SetTrigger("consecutive2"); break;
-					default : target.SetTrigger("consecutive3"); break;
+					case 0 : target.Play("consecutive1_ready"); break;
+					case 1 : target.Play("consecutive2_ready"); break;
+					default : target.Play("consecutive3_ready"); break;
 				}
-				//Debug.Log("Consecutive!");
 			};
 		AttackSkillList[2].Name = "Normal";
 		AttackSkillList[2].IsLongButton = false;
@@ -61,8 +59,7 @@ public class Player : MonoBehaviour {
 		AttackSkillList[2].Damage = new uint[1] {20};
 		AttackSkillList[2].PlayAnim
 			= (Animator target, uint combo) => {
-				target.SetTrigger("normal");
-				//Debug.Log("Normal!");
+				target.Play("normal_ready");
 			};
 
 		DefendSkillList[0].Name = "Guard";
@@ -72,7 +69,7 @@ public class Player : MonoBehaviour {
 			= (string attackSkill, uint turn, bool defendableJudge) => {
 				switch(attackSkill) {
 					case "Power" :
-						return (turn == 0)
+						return (turn == 1)
 							   ? DefendSkill.DefendState.GUARD
 							   : DefendSkill.DefendState.HIT;
 					case "Consecutive" :
@@ -85,8 +82,7 @@ public class Player : MonoBehaviour {
 			};
 		DefendSkillList[0].PlayAnim
 			= (Animator target, uint combo) => {
-				target.SetTrigger("guard");
-				//Debug.Log("Guard!");
+				target.Play("guard_ready");
 			};
 		DefendSkillList[1].Name = "Evade";
 		DefendSkillList[1].DefendRate = 1.0f;
@@ -95,11 +91,11 @@ public class Player : MonoBehaviour {
 			= (string attackSkill, uint turn, bool defendableJudge) => {
 				switch(attackSkill) {
 					case "Power" :
-						return (turn == 0 || defendableJudge == true)
+						return (turn == 1 || defendableJudge)
 							   ? DefendSkill.DefendState.GUARD
 							   : DefendSkill.DefendState.HIT;
 					case "Consecutive" :
-						return (defendableJudge == true)
+						return (defendableJudge)
 							   ? DefendSkill.DefendState.CANCEL
 							   : DefendSkill.DefendState.HIT;
 					case "Normal" :
@@ -110,8 +106,7 @@ public class Player : MonoBehaviour {
 			};
 		DefendSkillList[1].PlayAnim
 			= (Animator target, uint combo) => {
-				target.SetTrigger("evade");
-				//Debug.Log("Evade!");
+				target.Play("evade_ready");
 			};
 		DefendSkillList[2].Name = "Cancel";
 		DefendSkillList[2].DefendRate = 1.0f;
@@ -120,13 +115,13 @@ public class Player : MonoBehaviour {
 			= (string attackSkill, uint turn, bool defendableJudge) => {
 				switch(attackSkill) {
 					case "Power" :
-						return (turn == 0)
+						return (turn == 1)
 							   ? DefendSkill.DefendState.CANCEL
 							   : DefendSkill.DefendState.HIT;
 					case "Consecutive" :
 						return DefendSkill.DefendState.HIT;
 					case "Normal" :
-						return (defendableJudge == true)
+						return (defendableJudge)
 							   ? DefendSkill.DefendState.CANCEL
 							   : DefendSkill.DefendState.HIT;
 					default :
@@ -135,8 +130,7 @@ public class Player : MonoBehaviour {
 			};
 		DefendSkillList[2].PlayAnim
 			= (Animator target, uint combo) => {
-				target.SetTrigger("cancel");
-				//Debug.Log("Cancel!");
+				target.Play("cancel_ready");
 			};
 	}
 

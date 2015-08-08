@@ -3,28 +3,31 @@
 public class Note{
 	public enum Button {NONE, RED, BLUE, GREEN};
 	
-	public const uint TIME_MARGIN = 500000;
+	public const uint TIME_MARGIN = 500000; // time margin for judge
+	// key table for each button
 	public static readonly KeyCode[,] ButtonTable
 		= {{KeyCode.None, KeyCode.A, KeyCode.S, KeyCode.D},
 		   {KeyCode.None, KeyCode.J, KeyCode.K, KeyCode.L}};
 
-	public uint Id; // Id starts from 1
-					// Id number 0 refers to flipping attacker
-	public bool Flip; // flips attacker
-	public bool IsValid;
-	public Button[] PressedButton;
-	public uint[] Judge;
-	public int Time;
+	private uint Id; // Id of Current Note
+	private bool Flip; // flips attacker
+	private uint[] Judge; // judge of each player
 
-	public Note(uint id, int time = 0) {
+	public bool IsValid; // is shown in display
+	public int Time; // time of note
+	public Button[] PressedButton; // accepted input for each player
+
+	// default constructor
+	public Note(uint id, int time) {
 		Id = id;
+		Time = time;
 		Flip = false;
 		IsValid = false;
 		PressedButton = new Button[2] {Button.NONE, Button.NONE};
 		Judge = new uint[2] {0, 0};
-		Time = time;
 	}
 
+	// create note on display
 	public void Appear(BeatGenerator generator, Transform notePrefab) {
 		Transform newTrans
 			= Object.Instantiate(notePrefab,
@@ -35,6 +38,7 @@ public class Note{
 		newTrans.GetComponent<NoteMover>().NoteData = this;
 	}
 
+	// accept user input
 	public void Press(int player, int time, Button button) {
 		if(System.Math.Abs(time - this.Time) < TIME_MARGIN){
 			// set button pressed
@@ -48,9 +52,9 @@ public class Note{
 		}
 	}
 
-	public void Kill(BeatGenerator generator, NoteMover mover) {
-		Object.Destroy(mover.gameObject);
-		generator.NoteList.Dequeue();
+	// kill note from display
+	// calls actual battle logic
+	public void Kill() {
 		NetworkConnector network = GameObject.Find("NetworkManager")
 											 .GetComponent<NetworkConnector>();
 		BattleManager battleManager = GameObject.Find("BattleManager")
@@ -81,7 +85,7 @@ public class Note{
 							   + ' ' + PressedButton[1].ToString()
 							   + ' ' + this.Judge[1].ToString());
 		}
-		// wait call DoBattle after 100ms
+		// call actual battle logic
 		battleManager.StartCoroutine(battleManager.DoBattle(this.Id,
 															this.Flip));
 	}
