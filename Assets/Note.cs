@@ -10,9 +10,9 @@ public class Note{
 		   {KeyCode.None, KeyCode.J, KeyCode.K, KeyCode.L}};
 
 	private uint Id; // Id of Current Note
-	private bool Flip; // flips attacker
 	private uint[] Judge; // judge of each player
 
+	public bool Flip; // flips attacker
 	public bool IsValid; // is shown in display
 	public int Time; // time of note
 	public Button[] PressedButton; // accepted input for each player

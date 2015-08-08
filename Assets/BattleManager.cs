@@ -176,20 +176,7 @@ public class BattleManager : MonoBehaviour {
 
 	// flip attacking player
 	private IEnumerator FlipAttacker() {
-		yield return new WaitForSeconds(BattleManager.FLIP_DELAY);
-		// reset all triggers to avoid unwanted animation
-		foreach(AnimatorControllerParameter param
-				in Player[0].Anim.parameters) {
-			Player[0].Anim.ResetTrigger(param.name);
-		}
-		foreach(AnimatorControllerParameter param
-				in Player[1].Anim.parameters) {
-			Player[1].Anim.ResetTrigger(param.name);
-		}
-		// force playing basic animation
-		Player[0].Anim.Play("basic");
-		Player[1].Anim.Play("basic");
-
+		// flip attacker sign & reset combo
 		if(this.AttackerIndex == 0) {
 			this.AttackerIndex = 1;
 			Player[0].GetComponent<SpriteRenderer>().material.color
@@ -205,6 +192,22 @@ public class BattleManager : MonoBehaviour {
 				= Color.red;
 		}
 		this.CurrentCombo = 0;
+
+		yield return new WaitForSeconds(BattleManager.FLIP_DELAY);
+
+		// reset all triggers to avoid unwanted animation
+		foreach(AnimatorControllerParameter param
+				in Player[0].Anim.parameters) {
+			Player[0].Anim.ResetTrigger(param.name);
+		}
+		foreach(AnimatorControllerParameter param
+				in Player[1].Anim.parameters) {
+			Player[1].Anim.ResetTrigger(param.name);
+		}
+		// force playing basic animation
+		Player[0].Anim.Play("basic");
+		Player[1].Anim.Play("basic");
+
 	}
 	
 	// dequeue one note from DataQueue
