@@ -44,7 +44,9 @@ public class BattleManager : MonoBehaviour {
 		Player targetPlayer = Player[playerIndex];
 		if(playerIndex == AttackerIndex) {
 			AttackSkill skill = targetPlayer.GetAttackSkill(but);
-			uint combo = this.CurrentCombo % skill.TurnLength + 1;
+			uint combo = this.GetNextCombo(but,
+										   this.LastButton,
+										   skill.TurnLength);
 			skill.PlayAnim(targetPlayer.Anim, combo);
 		}
 		else {
@@ -77,18 +79,12 @@ public class BattleManager : MonoBehaviour {
 										: Player1Data;
 
 		// calculate combo
-		if(AttackData.Button != Note.Button.NONE
-		   && (AttackData.Button == this.LastButton
-			   || this.LastButton == Note.Button.NONE)
-		  ){
-		  	this.CurrentCombo = this.CurrentCombo
-		  						% Attacker.GetAttackSkill(AttackData.Button)
-							 			  .TurnLength
-								+ 1;
-		}
-		else {
-			this.CurrentCombo = 0;
-		}
+		AttackSkill skill = Attacker.GetAttackSkill(AttackData.Button);
+		this.CurrentCombo = this.GetNextCombo(
+			AttackData.Button,
+			this.LastButton,
+			(skill != null) ? skill.TurnLength : 1
+		);
 		ComboText.text = CurrentCombo.ToString() + " Combo";
 
 		// call BattleCore
@@ -222,6 +218,23 @@ public class BattleManager : MonoBehaviour {
 			return new BattleManager.Data {
 				Id = id, Judge = 0, Button = Note.Button.NONE
 			};
+		}
+	}
+
+	// calculates next combo
+	private uint GetNextCombo(Note.Button curBut, Note.Button prevBut,
+							  uint turnLength) {
+		if(curBut != Note.Button.NONE
+		   && (curBut == prevBut
+			   || prevBut == Note.Button.NONE)
+		  ){
+		  	return this.CurrentCombo % turnLength + 1;
+		}
+		else if(curBut != Note.Button.NONE) {
+			return 1;
+		}
+		else {
+			return 0;
 		}
 	}
 }
