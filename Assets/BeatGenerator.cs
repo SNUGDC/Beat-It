@@ -1,6 +1,10 @@
 using UnityEngine;
 using System;
+using System.IO;
+using System.Text;
 using System.Collections.Generic;
+
+using SimpleJSON;
 
 public class BeatGenerator : MonoBehaviour {
 	public Transform NotePrefab; // prefab for note
@@ -26,12 +30,21 @@ public class BeatGenerator : MonoBehaviour {
 	}
 
 	void Start() {
-		// TODO : read beat data from file
-		for(int i = 0; i <= 100; ++i) {
+		// load json file into string
+		string jsonString = File.ReadAllText ("Assets/test_data.json");
+		var data = JSON.Parse (jsonString);
+		int noteCount = data["notecount"].AsInt;
+		Debug.Log (noteCount);
+		for (int i = 0; i < noteCount; i++) {
+			Note newNote = new Note((uint)i, data["notes"][i]["time"].AsInt);
+			newNote.Flip = data["notes"][i]["flip"].AsBool;
+			NoteList.Enqueue(newNote);
+		}
+		/*for(int i = 0; i <= 100; ++i) {
 			Note newNote = new Note((uint)i, 1500000 * (i + 3));
 			if(i % 7 == 0) newNote.Flip = true;
 			NoteList.Enqueue(newNote);
-		}
+		}*/
 		StartTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
 		GameObject.Find("NetworkManager").GetComponent<NetworkConnector>()
 			.OnRead = this.OnSocketRead;
