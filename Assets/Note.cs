@@ -4,10 +4,6 @@ public class Note{
 	public enum Button {NONE, RED, BLUE, GREEN};
 	
 	public const uint TIME_MARGIN = 500000; // time margin for judge
-	// key table for each button
-	public static readonly KeyCode[,] ButtonTable
-		= {{KeyCode.None, KeyCode.A, KeyCode.S, KeyCode.D},
-		   {KeyCode.None, KeyCode.J, KeyCode.K, KeyCode.L}};
 
 	private uint Id; // Id of Current Note
 	private uint[] Judge; // judge of each player
@@ -28,13 +24,13 @@ public class Note{
 	}
 
 	// create note on display
-	public void Appear(BeatGenerator generator, Transform notePrefab) {
+	public void Appear(Transform notePrefab) {
 		Transform newTrans
 			= Object.Instantiate(notePrefab,
 								 new Vector3(0, -19.72f, -1 + 0.001f * Id),
 								 Quaternion.identity) as Transform;
 		IsValid = true;
-		newTrans.parent = generator.transform;
+		newTrans.parent = GameObject.Find("BeatGenerator").transform;
 		newTrans.GetComponent<NoteMover>().NoteData = this;
 	}
 
