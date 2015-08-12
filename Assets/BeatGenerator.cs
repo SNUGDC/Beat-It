@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using SimpleJSON;
 
 public class BeatGenerator : MonoBehaviour {
+	public const int BEAT_DELAY = 3000000;
 	public Transform NotePrefab; // prefab for note
 	public BattleManager BattleManager; // BattleManager object
 
@@ -31,12 +32,14 @@ public class BeatGenerator : MonoBehaviour {
 
 	void Start() {
 		// load json file into string
-		string jsonString = File.ReadAllText ("Assets/test_data.json");
+		string jsonString = Resources.Load<TextAsset>("test_data").text;
 		var data = JSON.Parse (jsonString);
 		int noteCount = data["notecount"].AsInt;
 		Debug.Log (noteCount);
 		for (int i = 0; i < noteCount; i++) {
-			Note newNote = new Note((uint)i, data["notes"][i]["time"].AsInt);
+			Note newNote =
+				new Note((uint)i,
+						 data["notes"][i]["time"].AsInt + BEAT_DELAY);
 			newNote.Flip = data["notes"][i]["flip"].AsBool;
 			NoteList.Enqueue(newNote);
 		}
