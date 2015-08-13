@@ -11,6 +11,7 @@ public class BattleManager : MonoBehaviour {
 		public uint Id;
 		public uint Judge;
 		public Note.Button Button;
+		public InputManager.InputType Type;
 	}
 
 	public Player[] Player;
@@ -20,11 +21,13 @@ public class BattleManager : MonoBehaviour {
 	public Text BattleText; // TODO : remove this
 
 	private Note.Button LastButton;
+	private InputManager.InputType LastType;
 	private uint CurrentCombo;
 	private int AttackerIndex;
 
-	private void Start () {
+	void Start () {
 		this.LastButton = Note.Button.NONE;
+		this.LastType = InputManager.InputType.NONE;
 		this.CurrentCombo = 0;
 		this.AttackerIndex = 0;
 		Player[1].GetComponent<SpriteRenderer>().material.color
@@ -37,22 +40,52 @@ public class BattleManager : MonoBehaviour {
 		};
 	}
 	
-	private void Update () {
+	void Update () {
 	}
 
-	public void GetReady(int playerIndex, Note.Button but) {
+	public void PressUp(int playerIndex, Note.Button but) {
+		Player targetPlayer = Player[playerIndex];
+		AttackSkill skill = targetPlayer.GetAttackSkill(but);
+		if(skill.IsLongButton && playerIndex == AttackerIndex
+		   && but == LastButton && LastType != InputManager.InputType.UP) {
+		   	targetPlayer.Anim.SetTrigger("hit");
+		   	this.LastButton = Note.Button.NONE;
+		   	this.LastType = InputManager.InputType.NONE;
+		}
+	}
+
+	public bool GetReady(int playerIndex, Note.Button but, InputManager.InputType type) {
 		Player targetPlayer = Player[playerIndex];
 		if(playerIndex == AttackerIndex) {
 			AttackSkill skill = targetPlayer.GetAttackSkill(but);
-			uint combo = this.GetNextCombo(but,
-										   this.LastButton,
-										   skill.TurnLength);
-			skill.PlayAnim(targetPlayer.Anim, combo);
+			uint combo = this.GetNextCombo(but, type, skill);
+			// skill is not long button -> ignore long button input
+			if(!skill.IsLongButton
+			   && (type == InputManager.InputType.KEEP || type == InputManager.InputType.UP)) {
+				return false;
+			}
+			// UP or KEEP signal came without DOWN signal -> ignore input
+			if(LastButton != but
+			   && (type == InputManager.InputType.KEEP || type == InputManager.InputType.UP)) {
+				return false;
+			}
+			// long button is pressed too long -> ignore input & wait for UP signal
+			if(skill.IsLongButton && combo >= skill.TurnLength
+			   && type == InputManager.InputType.KEEP) {
+				return false;
+			}
+			skill.PlayAnim(targetPlayer.Anim, combo, type == InputManager.InputType.UP);
+			return true;
 		}
 		else {
+			// ignore long button input
+			if(type == InputManager.InputType.KEEP || type == InputManager.InputType.UP) {
+				return false;
+			}
 			DefendSkill skill = targetPlayer.GetDefendSkill(but);
 			uint combo = 1;
-			skill.PlayAnim(targetPlayer.Anim, combo);
+			skill.PlayAnim(targetPlayer.Anim, combo, false);
+			return true;
 		}
 	}
 
@@ -63,27 +96,22 @@ public class BattleManager : MonoBehaviour {
 		BattleManager.Data Player2Data = GetData(1, id);
 
 		// set judge text
-		JudgeDisplayer[0].SetJudge(Player1Data.Judge / 10.0f,
-								   Player1Data.Button);
-		JudgeDisplayer[1].SetJudge(Player2Data.Judge / 10.0f,
-								   Player2Data.Button);
+		JudgeDisplayer[0].SetJudge(Player1Data.Judge / 10.0f, Player1Data.Button);
+		JudgeDisplayer[1].SetJudge(Player2Data.Judge / 10.0f, Player2Data.Button);
 
 		// assign basic variables
 		Player Attacker = (this.AttackerIndex == 0) ? Player[0] : Player[1];
 		Player Defender = (this.AttackerIndex == 0) ? Player[1] : Player[0];
-		BattleManager.Data AttackData = (this.AttackerIndex == 0)
-										? Player1Data
-										: Player2Data;
-		BattleManager.Data DefendData = (this.AttackerIndex == 0)
-										? Player2Data
-										: Player1Data;
+
+		BattleManager.Data AttackData = (this.AttackerIndex == 0) ? Player1Data : Player2Data;
+		BattleManager.Data DefendData = (this.AttackerIndex == 0) ? Player2Data : Player1Data;
 
 		// calculate combo
 		AttackSkill skill = Attacker.GetAttackSkill(AttackData.Button);
 		this.CurrentCombo = this.GetNextCombo(
 			AttackData.Button,
-			this.LastButton,
-			(skill != null) ? skill.TurnLength : 1
+			AttackData.Type,
+			skill
 		);
 		ComboText.text = CurrentCombo.ToString() + " Combo";
 
@@ -92,6 +120,7 @@ public class BattleManager : MonoBehaviour {
 
 		// post-battle logic
 		this.LastButton = AttackData.Button;
+		this.LastType = AttackData.Type;
 		if(flip) StartCoroutine(FlipAttacker());
 	}
 
@@ -101,28 +130,26 @@ public class BattleManager : MonoBehaviour {
 		AttackSkill attackerSkill = attacker.GetAttackSkill(attackData.Button);
 		DefendSkill defenderSkill = defender.GetDefendSkill(defendData.Button);
 		DefendSkill.DefendState defendResult;
+		// if both player didn't press button, set result to NONE
+		if(defendData.Button == Note.Button.NONE && attackData.Button == Note.Button.NONE)
+			defendResult = DefendSkill.DefendState.NONE;
 		// if defender didn't press button, set result to HIT
-		if(defendData.Button == Note.Button.NONE) {
+		else if(defendData.Button == Note.Button.NONE) {
 			defendResult = DefendSkill.DefendState.HIT;
 		}
-		// if defender pressed button, but attacker didn't, set result to GUARD
+		// if attacker didn't press button, set result to GUARD
 		else if(attackData.Button == Note.Button.NONE) {
 			defendResult = DefendSkill.DefendState.GUARD;
 		}
 		// both players pressed button
 		else {
-			defendResult
-				= defenderSkill.DoDefend(attackerSkill.Name,
-										 this.CurrentCombo,
-										 attackData.Judge <= defendData.Judge);
+			defendResult = defenderSkill.DoDefend(attackerSkill.Name,
+												  attackData.Judge <= defendData.Judge,
+												  attackData.Type == InputManager.InputType.UP);
 		}
 		// TODO : remove this if-else block
 		// print result to BattleText
-		if(attackData.Button == Note.Button.NONE
-		   && defendData.Button == Note.Button.NONE) {
-			BattleText.text = "NONE";
-		}
-		else	BattleText.text = defendResult.ToString();
+		BattleText.text = defendResult.ToString();
 
 		switch(defendResult) {
 			case DefendSkill.DefendState.GUARD : {
@@ -146,7 +173,7 @@ public class BattleManager : MonoBehaviour {
 										* (1 - defenderSkill.DefendRate));
 				} catch {}
 				try {
-					attacker.Anim.SetTrigger("hit");
+					attacker.Anim.Play("hit");
 					attacker.DecreaseHp(defenderSkill.Damage);
 				} catch {}
 				this.CurrentCombo = 0;
@@ -155,15 +182,15 @@ public class BattleManager : MonoBehaviour {
 			case DefendSkill.DefendState.HIT : {
 				// attacker succeeded to hit defender
 				try {
-					defender.Anim.SetTrigger("hit");
+					defender.Anim.Play("hit");
 					defender.DecreaseHp(attackerSkill.Damage[CurrentCombo - 1]);
 				} catch {}
-				if(attackData.Button != Note.Button.NONE){
-					attacker.Anim.SetTrigger("action");
-				}
-				else{
-					attacker.Anim.SetTrigger("hit");
-				}
+				attacker.Anim.SetTrigger("action");
+				break;
+			}
+			case DefendSkill.DefendState.NONE : {
+				defender.Anim.Play("hit");
+				attacker.Anim.Play("hit");
 				break;
 			}
 			default : break;
@@ -188,6 +215,8 @@ public class BattleManager : MonoBehaviour {
 				= Color.red;
 		}
 		this.CurrentCombo = 0;
+		this.LastButton = Note.Button.NONE;
+		this.LastType = InputManager.InputType.NONE;
 
 		yield return new WaitForSeconds(BattleManager.FLIP_DELAY);
 
@@ -222,19 +251,27 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	// calculates next combo
-	private uint GetNextCombo(Note.Button curBut, Note.Button prevBut,
-							  uint turnLength) {
-		if(curBut != Note.Button.NONE
-		   && (curBut == prevBut
-			   || prevBut == Note.Button.NONE)
-		  ){
-		  	return this.CurrentCombo % turnLength + 1;
-		}
-		else if(curBut != Note.Button.NONE) {
-			return 1;
-		}
-		else {
+	private uint GetNextCombo(Note.Button curBut,
+							  InputManager.InputType curType,
+							  AttackSkill skill) {
+		// skill not found
+		if(skill == null)
 			return 0;
-		}
+		// skill is long button & DOWN signal received twice
+		else if(skill.IsLongButton
+				&& curType == InputManager.InputType.DOWN
+				&& LastType == InputManager.InputType.DOWN)
+			return 1;
+		// skill is long button & released at last turn
+		else if(skill.IsLongButton && curBut == LastButton && LastType == InputManager.InputType.UP)
+			return 1;
+		// new button pressed
+		else if(curBut != Note.Button.NONE && LastButton == Note.Button.NONE)
+			return 1;
+		// button accepted -> combo increase
+		else if(curBut != Note.Button.NONE && curBut == LastButton)
+			return this.CurrentCombo % skill.TurnLength + 1;
+		else
+			return 0;
 	}
 }

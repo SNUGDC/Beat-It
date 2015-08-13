@@ -37,15 +37,20 @@ public class BeatGenerator : MonoBehaviour {
 
 	void Start() {
 		// load note data from json
-		string jsonString = Resources.Load<TextAsset>("test_data").text;
-		var data = JSON.Parse(jsonString);
-		int noteCount = data["notecount"].AsInt;
-		for(int i = 0; i < noteCount; i++) {
-			Note newNote = new Note(
-				(uint)i,
-				data["notes"][i]["time"].AsInt + BEAT_DELAY
-			);
-			newNote.Flip = data["notes"][i]["flip"].AsBool;
+		// string jsonString = Resources.Load<TextAsset>("test_data").text;
+		// var data = JSON.Parse(jsonString);
+		// int noteCount = data["notecount"].AsInt;
+		// for(int i = 0; i < noteCount; i++) {
+		// 	Note newNote = new Note(
+		// 		(uint)i,
+		// 		data["notes"][i]["time"].AsInt + BEAT_DELAY
+		// 	);
+		// 	newNote.Flip = data["notes"][i]["flip"].AsBool;
+		// 	NoteList.Enqueue(newNote);
+		// }
+		for(int i = 0; i <= 100; ++i) {
+			Note newNote = new Note((uint)i, 2000000 * (i + 3));
+			//if(i % 7 == 0) newNote.Flip = true;
 			NoteList.Enqueue(newNote);
 		}
 		_StartTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);

@@ -1,8 +1,8 @@
 public class DefendSkill {
-	public enum DefendState {GUARD, CANCEL, HIT}
+	public enum DefendState {NONE, GUARD, CANCEL, HIT}
 	public delegate DefendState DefendHandler(string attackSkill,
-											  uint turn,
-											  bool defendableJudge);
+											  bool defendableJudge,
+											  bool isUp);
 
 	public string Name;
 	public float DefendRate;

@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class Player : MonoBehaviour {
-	public delegate void PlayAnim(Animator target, uint combo);
+	public delegate void PlayAnim(Animator target, uint combo, bool isUp);
 	public Animator Anim; // Mechanim animator for this player
 	public TextMesh HpBar; // Hp Text
 	public TextMesh SpBar; // Sp Text
@@ -33,20 +33,20 @@ public class Player : MonoBehaviour {
 	public void SetSkill(string fileName) {
 		// TODO : load from file
 		AttackSkillList[0].Name = "Power";
-		AttackSkillList[0].IsLongButton = false; // TODO : change to true
+		AttackSkillList[0].IsLongButton = true;
 		AttackSkillList[0].TurnLength = 2;
 		AttackSkillList[0].Damage = new uint[2] {0, 100};
 		AttackSkillList[0].PlayAnim
-			= (Animator target, uint combo) => {
+			= (Animator target, uint combo, bool isUp) => {
 				if(combo == 1) target.Play("strong_ready_ready");
-				else		   target.Play("strong_success_ready");
+				else if(isUp)  target.Play("strong_success_ready");
 			};
 		AttackSkillList[1].Name = "Consecutive";
 		AttackSkillList[1].IsLongButton = false;
 		AttackSkillList[1].TurnLength = 3;
 		AttackSkillList[1].Damage = new uint[3] {30, 40, 70};
 		AttackSkillList[1].PlayAnim
-			= (Animator target, uint combo) => {
+			= (Animator target, uint combo, bool isUp) => {
 				switch(combo) {
 					case 1 : target.Play("consecutive1_ready"); break;
 					case 2 : target.Play("consecutive2_ready"); break;
@@ -58,7 +58,7 @@ public class Player : MonoBehaviour {
 		AttackSkillList[2].TurnLength = 1;
 		AttackSkillList[2].Damage = new uint[1] {20};
 		AttackSkillList[2].PlayAnim
-			= (Animator target, uint combo) => {
+			= (Animator target, uint combo, bool isUp) => {
 				target.Play("normal_ready");
 			};
 
@@ -66,12 +66,12 @@ public class Player : MonoBehaviour {
 		DefendSkillList[0].DefendRate = 0.5f;
 		DefendSkillList[0].Damage = 0;
 		DefendSkillList[0].DoDefend
-			= (string attackSkill, uint turn, bool defendableJudge) => {
+			= (string attackSkill, bool defendableJudge, bool isUp) => {
 				switch(attackSkill) {
 					case "Power" :
-						return (turn == 1)
-							   ? DefendSkill.DefendState.GUARD
-							   : DefendSkill.DefendState.HIT;
+						return (isUp)
+							   ? DefendSkill.DefendState.HIT
+							   : DefendSkill.DefendState.GUARD;
 					case "Consecutive" :
 						return DefendSkill.DefendState.GUARD;
 					case "Normal" :
@@ -81,17 +81,17 @@ public class Player : MonoBehaviour {
 				}
 			};
 		DefendSkillList[0].PlayAnim
-			= (Animator target, uint combo) => {
+			= (Animator target, uint combo, bool isUp) => {
 				target.Play("guard_ready");
 			};
 		DefendSkillList[1].Name = "Evade";
 		DefendSkillList[1].DefendRate = 1.0f;
 		DefendSkillList[1].Damage = 0;
 		DefendSkillList[1].DoDefend
-			= (string attackSkill, uint turn, bool defendableJudge) => {
+			= (string attackSkill, bool defendableJudge, bool isUp) => {
 				switch(attackSkill) {
 					case "Power" :
-						return (turn == 1 || defendableJudge)
+						return (!isUp || defendableJudge)
 							   ? DefendSkill.DefendState.GUARD
 							   : DefendSkill.DefendState.HIT;
 					case "Consecutive" :
@@ -105,19 +105,19 @@ public class Player : MonoBehaviour {
 				}
 			};
 		DefendSkillList[1].PlayAnim
-			= (Animator target, uint combo) => {
+			= (Animator target, uint combo, bool isUp) => {
 				target.Play("evade_ready");
 			};
 		DefendSkillList[2].Name = "Cancel";
 		DefendSkillList[2].DefendRate = 1.0f;
 		DefendSkillList[2].Damage = 20;
 		DefendSkillList[2].DoDefend
-			= (string attackSkill, uint turn, bool defendableJudge) => {
+			= (string attackSkill, bool defendableJudge, bool isUp) => {
 				switch(attackSkill) {
 					case "Power" :
-						return (turn == 1)
-							   ? DefendSkill.DefendState.CANCEL
-							   : DefendSkill.DefendState.HIT;
+						return (isUp)
+							   ? DefendSkill.DefendState.HIT
+							   : DefendSkill.DefendState.CANCEL;
 					case "Consecutive" :
 						return DefendSkill.DefendState.HIT;
 					case "Normal" :
@@ -129,7 +129,7 @@ public class Player : MonoBehaviour {
 				}
 			};
 		DefendSkillList[2].PlayAnim
-			= (Animator target, uint combo) => {
+			= (Animator target, uint combo, bool isUp) => {
 				target.Play("cancel_ready");
 			};
 	}
