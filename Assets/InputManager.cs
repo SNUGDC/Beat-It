@@ -1,15 +1,32 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 public class InputManager : MonoBehaviour {
 	public const int KEEP_MARGIN = 10000;
 	public enum InputType {NONE, DOWN, KEEP, UP};
 
 	public BeatGenerator BeatGen;
+	public BattleManager BattleMan;
 	public int Player;
 
 	private InputType[] CurInput;
 	private bool[] IsLongPressed;
+
+	// interpret input & put data into queue
+	public void OnSocketRead(string input) {
+		// message format is
+		// "player noteId judge button"
+		string[] splitInput = input.Split(' ');
+		int player = System.Convert.ToInt32(splitInput[0]);
+		BattleManager.Data newData = new BattleManager.Data {
+			Id = System.Convert.ToUInt32(splitInput[1]),
+			Judge = System.Convert.ToUInt32(splitInput[2]),
+			Button = (Note.Button)System.Enum.Parse(typeof(Note.Button), splitInput[3])
+		};
+		// add interpreted data into data queue
+		BattleMan.DataQueue[player].Enqueue(newData);
+	}
 
 	private KeyCode ButToKeycode(Note.Button but) {
 		switch(but) {
@@ -28,6 +45,8 @@ public class InputManager : MonoBehaviour {
 	void Start () {
 		IsLongPressed = new bool[3] {true, true, true};
 		CurInput = new InputManager.InputType[3];
+		GameObject.Find("NetworkManager").GetComponent<NetworkConnector>()
+			.OnRead = this.OnSocketRead;
 	}
 
 	// Update is called once per frame
@@ -35,15 +54,9 @@ public class InputManager : MonoBehaviour {
 		int curTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
 		UpdateInput();
 		// find first unpressed note in VALID State for player
-		Note target = null;
-		foreach(Note n in BeatGen.NoteList) {
-			if(n.IsValid && !n.IsPressed(Player)) {
-				// found target note
-				// check input & set button for player
-				target = n;
-				break;
-			}
-		}
+		Note target = BeatGen.NoteList.First(
+			n => n.IsValid && !n.IsPressed(Player)
+		);
 		// return if no target note found
 		if(target == null) return;
 		// if button is up or down, send event
