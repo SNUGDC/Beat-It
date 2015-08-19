@@ -73,8 +73,7 @@ public class BeatGenerator : MonoBehaviour {
 			}
 		}
 		Note curNote = NoteList.Peek();
-		if(curNote != null && curTime >= curNote.Time + this.StartTime
-										 + BeatGenerator.BEAT_MARGIN) {
+		if(curNote != null && curTime >= curNote.Time + this.StartTime) {
 			this.GetComponent<AudioSource>().Play();
 			curNote = this.NoteList.Dequeue();
 			curNote.Kill();
