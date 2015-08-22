@@ -47,7 +47,6 @@ public class InputManager : MonoBehaviour {
 	void Start () {
 		IsLongPressed = new bool[4] {true, true, true, true};
 		CurInput = new InputType[4];
-		GameObject.Find("NetworkManager").GetComponent<NetworkConnector>().OnRead = OnSocketRead;
 	}
 
 	// Update is called once per frame

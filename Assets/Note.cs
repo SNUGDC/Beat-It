@@ -63,25 +63,10 @@ public class Note{
 	// kill note from display
 	// calls actual battle logic
 	public void Kill() {
-		var network = GameObject.Find("NetworkManager").GetComponent<NetworkConnector>();
 		var manager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
-		if(network.LocalPlayer[0]) manager.DataQueue[0].Enqueue(CoreData[0]);
-		else {
-			network.SendString("0"
-							   + ' ' + CoreData[0].Id.ToString()
-							   + ' ' + CoreData[0].Button.ToString()
-							   + ' ' + CoreData[0].Type.ToString()
-							   + ' ' + CoreData[0].Judge.ToString());
-		}
-		if(network.LocalPlayer[1]) manager.DataQueue[1].Enqueue(CoreData[1]);
-		else {
-			network.SendString("1"
-							   + ' ' + CoreData[1].Id.ToString()
-							   + ' ' + CoreData[1].Button.ToString()
-							   + ' ' + CoreData[1].Type.ToString()
-							   + ' ' + CoreData[1].Judge.ToString());
-		}
+		manager.DataQueue[0].Enqueue(CoreData[0]);
+		manager.DataQueue[1].Enqueue(CoreData[1]);
 		// call actual battle logic
-		manager.StartCoroutine(manager.DoBattle(CoreData[0].Id, Flip));
+		manager.DoBattle(CoreData[0].Id, Flip);
 	}
 }

@@ -160,8 +160,8 @@ public class Player : MonoBehaviour {
 	}
 
 	public void DecreaseHp(int diff) {
-		this.Hp -= diff;
-		this.HpBar.text = this.Hp.ToString();
+		//this.Hp -= diff;
+		//this.HpBar.text = this.Hp.ToString();
 	}
 
 	// shortcut for float argument
@@ -170,7 +170,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public void IncreaseSp(int diff) {
-		this.Sp += diff;
-		this.SpBar.text = this.Sp.ToString();
+		//this.Sp += diff;
+		//this.SpBar.text = this.Sp.ToString();
 	}
 }

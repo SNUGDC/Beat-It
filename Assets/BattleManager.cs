@@ -4,8 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class BattleManager : MonoBehaviour {
-	public const float NETWORK_DELAY = 0.05f;
-	public const float FLIP_DELAY = 0.6f;
 
 	public Player[] Player;
 	public JudgeDisplayer[] JudgeDisplayer;
@@ -89,8 +87,7 @@ public class BattleManager : MonoBehaviour {
 		}
 	}
 
-	public IEnumerator DoBattle(uint id, bool flip) {
-		yield return new WaitForSeconds(BattleManager.NETWORK_DELAY);
+	public void DoBattle(uint id, bool flip) {
 		
 		Note.Core Player1Data = GetData(0, id);
 		Note.Core Player2Data = GetData(1, id);
@@ -122,7 +119,7 @@ public class BattleManager : MonoBehaviour {
 		this.LastButton = AttackData.Button;
 		this.LastType = AttackData.Type;
 		if(flip) {
-			if(!CancelFlip) StartCoroutine(FlipAttacker());
+			if(!CancelFlip) FlipAttacker();
 			else CancelFlip = false;
 		}
 	}
@@ -208,7 +205,7 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	// flip attacking player
-	private IEnumerator FlipAttacker() {
+	private void FlipAttacker() {
 		// flip attacker sign & reset combo
 		if(this.AttackerIndex == 0) {
 			this.AttackerIndex = 1;
@@ -227,8 +224,6 @@ public class BattleManager : MonoBehaviour {
 		this.CurrentCombo = 0;
 		this.LastButton = Note.Button.NONE;
 		this.LastType = InputManager.InputType.NONE;
-
-		yield return new WaitForSeconds(BattleManager.FLIP_DELAY);
 
 		// reset all triggers to avoid unwanted animation
 		foreach(AnimatorControllerParameter param

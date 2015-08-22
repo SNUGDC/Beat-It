@@ -20,7 +20,7 @@ public class BeatGenerator : MonoBehaviour {
 		// ReadBeat("test_data");
 		// generate test data
 		for(int i = 1; i <= 100; ++i) {
-			Note newNote = new Note((uint)i, 2000000 * (i + 3), (i % 7) == 0);
+			Note newNote = new Note((uint)i, 1000000 * (i + 3), (i % 7) == 0);
 			NoteList.Enqueue(newNote);
 		}
 		_StartTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
