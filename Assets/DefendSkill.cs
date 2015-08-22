@@ -7,6 +7,7 @@ public class DefendSkill {
 	public string Name;
 	public float DefendRate;
 	public uint Damage;
+	public uint SkillPoint;
 	public DefendHandler DoDefend;
 	public Player.PlayAnim PlayAnim;
 }

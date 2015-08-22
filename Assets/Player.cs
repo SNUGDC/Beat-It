@@ -12,10 +12,10 @@ public class Player : MonoBehaviour {
 	private DefendSkill[] DefendSkillList;
 
 	void Start() {
-		Hp = 100;
-		this.HpBar.text = this.Hp.ToString();
-		Sp = 0;
-		this.SpBar.text = this.Sp.ToString();
+		//Hp = 100;
+		//this.HpBar.text = this.Hp.ToString();
+		//Sp = 0;
+		//this.SpBar.text = this.Sp.ToString();
 		AttackSkillList = new AttackSkill[3] {
 			new AttackSkill(), new AttackSkill(), new AttackSkill()
 		};
@@ -27,7 +27,6 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update() {
-	
 	}
 
 	public void SetSkill(string fileName) {
@@ -36,6 +35,7 @@ public class Player : MonoBehaviour {
 		AttackSkillList[0].IsLongButton = true;
 		AttackSkillList[0].TurnLength = 2;
 		AttackSkillList[0].Damage = new uint[2] {0, 100};
+		AttackSkillList[0].SkillPoint = new uint[2] {0, 0};
 		AttackSkillList[0].PlayAnim
 			= (Animator target, uint combo, bool isUp) => {
 				if(combo == 1) target.Play("strong_ready_ready");
@@ -45,6 +45,7 @@ public class Player : MonoBehaviour {
 		AttackSkillList[1].IsLongButton = false;
 		AttackSkillList[1].TurnLength = 3;
 		AttackSkillList[1].Damage = new uint[3] {30, 40, 70};
+		AttackSkillList[1].SkillPoint = new uint[3] {0, 0, 0};
 		AttackSkillList[1].PlayAnim
 			= (Animator target, uint combo, bool isUp) => {
 				switch(combo) {
@@ -57,6 +58,7 @@ public class Player : MonoBehaviour {
 		AttackSkillList[2].IsLongButton = false;
 		AttackSkillList[2].TurnLength = 1;
 		AttackSkillList[2].Damage = new uint[1] {20};
+		AttackSkillList[2].SkillPoint = new uint[1] {500};
 		AttackSkillList[2].PlayAnim
 			= (Animator target, uint combo, bool isUp) => {
 				target.Play("normal_ready");
@@ -65,6 +67,7 @@ public class Player : MonoBehaviour {
 		DefendSkillList[0].Name = "Guard";
 		DefendSkillList[0].DefendRate = 0.5f;
 		DefendSkillList[0].Damage = 0;
+		DefendSkillList[0].SkillPoint = 0;
 		DefendSkillList[0].DoDefend
 			= (string attackSkill, bool defendableJudge, bool isUp) => {
 				switch(attackSkill) {
@@ -87,6 +90,7 @@ public class Player : MonoBehaviour {
 		DefendSkillList[1].Name = "Evade";
 		DefendSkillList[1].DefendRate = 1.0f;
 		DefendSkillList[1].Damage = 0;
+		DefendSkillList[1].SkillPoint = 500;
 		DefendSkillList[1].DoDefend
 			= (string attackSkill, bool defendableJudge, bool isUp) => {
 				switch(attackSkill) {
@@ -111,6 +115,7 @@ public class Player : MonoBehaviour {
 		DefendSkillList[2].Name = "Cancel";
 		DefendSkillList[2].DefendRate = 1.0f;
 		DefendSkillList[2].Damage = 20;
+		DefendSkillList[2].SkillPoint = 500;
 		DefendSkillList[2].DoDefend
 			= (string attackSkill, bool defendableJudge, bool isUp) => {
 				switch(attackSkill) {
@@ -139,6 +144,7 @@ public class Player : MonoBehaviour {
 			case Note.Button.RED	: return this.AttackSkillList[0];
 			case Note.Button.BLUE	: return this.AttackSkillList[1];
 			case Note.Button.GREEN	: return this.AttackSkillList[2];
+			case Note.Button.SKILL	: return this.AttackSkillList[3];
 			default					: return null;
 		}
 	}
@@ -148,6 +154,7 @@ public class Player : MonoBehaviour {
 			case Note.Button.RED	: return this.DefendSkillList[0];
 			case Note.Button.BLUE	: return this.DefendSkillList[1];
 			case Note.Button.GREEN	: return this.DefendSkillList[2];
+			case Note.Button.SKILL	: return this.DefendSkillList[3];
 			default					: return null;
 		}
 	}

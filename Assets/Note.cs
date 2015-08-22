@@ -7,7 +7,7 @@ public class Note{
 		public InputManager.InputType Type;
 		public uint Judge;
 	}
-	public enum Button {NONE, RED, BLUE, GREEN};
+	public enum Button {NONE, RED, BLUE, GREEN, SKILL};
 
 	public bool IsValid; // is shown in display
 	public int Time; // time of note

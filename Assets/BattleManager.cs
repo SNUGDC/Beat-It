@@ -16,12 +16,14 @@ public class BattleManager : MonoBehaviour {
 	private InputManager.InputType LastType;
 	private uint CurrentCombo;
 	private int AttackerIndex;
+	private bool CancelFlip;
 
 	void Start () {
 		LastButton = Note.Button.NONE;
 		LastType = InputManager.InputType.NONE;
 		CurrentCombo = 0;
 		AttackerIndex = 0;
+		CancelFlip = false;
 		Player[0].GetComponent<SpriteRenderer>().material.color = Color.red;
 		Player[1].GetComponent<SpriteRenderer>().material.color = Color.white;
 		DataQueue = new Queue<Note.Core>[2] { new Queue<Note.Core>(), new Queue<Note.Core>() };
@@ -68,7 +70,7 @@ public class BattleManager : MonoBehaviour {
 			if(type == InputManager.InputType.KEEP || type == InputManager.InputType.UP) {
 				return false;
 			}
-			else return true;
+			return true;
 		}
 	}
 
@@ -119,7 +121,10 @@ public class BattleManager : MonoBehaviour {
 		// post-battle logic
 		this.LastButton = AttackData.Button;
 		this.LastType = AttackData.Type;
-		if(flip) StartCoroutine(FlipAttacker());
+		if(flip) {
+			if(!CancelFlip) StartCoroutine(FlipAttacker());
+			else CancelFlip = false;
+		}
 	}
 
 	// core battle logic
@@ -154,6 +159,7 @@ public class BattleManager : MonoBehaviour {
 					defender.Anim.SetTrigger("action");
 					defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo - 1]
 										* (1 - defenderSkill.DefendRate));
+					defender.IncreaseSp((int)defenderSkill.SkillPoint);
 				} catch {}
 				try {
 					attacker.Anim.SetTrigger("action");
@@ -167,6 +173,7 @@ public class BattleManager : MonoBehaviour {
 					defender.Anim.SetTrigger("action");
 					defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo - 1]
 										* (1 - defenderSkill.DefendRate));
+					defender.IncreaseSp((int)defenderSkill.SkillPoint);
 				} catch {}
 				try {
 					attacker.Anim.Play("hit");
@@ -182,6 +189,7 @@ public class BattleManager : MonoBehaviour {
 					defender.DecreaseHp(attackerSkill.Damage[CurrentCombo - 1]);
 				} catch {}
 				attacker.Anim.SetTrigger("action");
+				attacker.IncreaseSp((int)attackerSkill.SkillPoint[CurrentCombo - 1]);
 				break;
 			}
 			case DefendSkill.DefendState.NONE : {
@@ -191,6 +199,12 @@ public class BattleManager : MonoBehaviour {
 			}
 			default : break;
 		}
+		if(CurrentCombo == 3 && attackData.Button == Note.Button.BLUE
+		   && defendResult == DefendSkill.DefendState.HIT)
+			CancelFlip = true;
+		if(CurrentCombo == 2 && attackData.Button == Note.Button.RED
+		   && defendResult == DefendSkill.DefendState.HIT)
+			CancelFlip = true;
 	}
 
 	// flip attacking player
@@ -228,9 +242,8 @@ public class BattleManager : MonoBehaviour {
 		// force playing basic animation
 		Player[0].Anim.Play("basic");
 		Player[1].Anim.Play("basic");
-
 	}
-	
+
 	// dequeue one note from DataQueue
 	// if no data exists or id dismatches, return initialized data
 	private Note.Core GetData(int player, uint id) {
@@ -268,6 +281,6 @@ public class BattleManager : MonoBehaviour {
 		else if(curBut != Note.Button.NONE && curBut == LastButton)
 			return this.CurrentCombo % skill.TurnLength + 1;
 		else
-			return 0;
+			return 1;
 	}
 }

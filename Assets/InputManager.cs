@@ -36,6 +36,8 @@ public class InputManager : MonoBehaviour {
 				return (Player == 0) ? KeyCode.S : KeyCode.K;
 			case Note.Button.GREEN :
 				return (Player == 0) ? KeyCode.D : KeyCode.L;
+			case Note.Button.SKILL :
+				return (Player == 0) ? KeyCode.W : KeyCode.I;
 			default :
 				return KeyCode.None;
 		}
@@ -43,8 +45,8 @@ public class InputManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		IsLongPressed = new bool[3] {true, true, true};
-		CurInput = new InputType[3];
+		IsLongPressed = new bool[4] {true, true, true, true};
+		CurInput = new InputType[4];
 		GameObject.Find("NetworkManager").GetComponent<NetworkConnector>().OnRead = OnSocketRead;
 	}
 
@@ -62,6 +64,8 @@ public class InputManager : MonoBehaviour {
 			target.Press(Player, curTime, Note.Button.BLUE, CurInput[1]);
 		else if(CurInput[2] == InputType.DOWN || CurInput[2] == InputType.UP)
 			target.Press(Player, curTime, Note.Button.GREEN, CurInput[2]);
+		else if(CurInput[3] == InputType.DOWN || CurInput[3] == InputType.UP)
+			target.Press(Player, curTime, Note.Button.SKILL, CurInput[3]);
 		// if button is keep at appropriate time, send event
 		else if(System.Math.Abs(target.Time - curTime) <= KEEP_MARGIN) {
 			if(CurInput[0] == InputType.KEEP)
@@ -70,13 +74,15 @@ public class InputManager : MonoBehaviour {
 				target.Press(Player, curTime, Note.Button.BLUE, CurInput[1]);
 			else if(CurInput[2] == InputType.KEEP)
 				target.Press(Player, curTime, Note.Button.GREEN, CurInput[2]);
+			else if(CurInput[3] == InputType.KEEP)
+				target.Press(Player, curTime, Note.Button.SKILL, CurInput[3]);
 		}
 		// if button is accepted, reset long button detector
 		if(target.IsPressed(Player)) ResetLongButton();
 	}
 
 	private void ResetLongButton() {
-		IsLongPressed[0] = IsLongPressed[1] = IsLongPressed[2] = true;
+		IsLongPressed[0] = IsLongPressed[1] = IsLongPressed[2] = IsLongPressed[3] = true;
 	}
 
 	private void UpdateInput() {
@@ -84,6 +90,7 @@ public class InputManager : MonoBehaviour {
 		if(CurInput[0] == InputType.UP) IsLongPressed[0] = false;
 		if(CurInput[1] == InputType.UP) IsLongPressed[1] = false;
 		if(CurInput[2] == InputType.UP) IsLongPressed[2] = false;
+		if(CurInput[3] == InputType.UP) IsLongPressed[3] = false;
 		// process red button
 		if(Input.GetKeyDown(ButToKeycode(Note.Button.RED)))
 			CurInput[0] = InputType.DOWN;
@@ -126,5 +133,19 @@ public class InputManager : MonoBehaviour {
 						  : InputType.NONE;
 		else
 			CurInput[2] = InputType.NONE;
+		// process green button
+		if(Input.GetKeyDown(ButToKeycode(Note.Button.SKILL)))
+			CurInput[3] = InputType.DOWN;
+		else if(Input.GetKeyUp(ButToKeycode(Note.Button.SKILL))){
+			CurInput[3] = (IsLongPressed[3])
+						  ? InputType.UP
+						  : InputType.NONE;
+		}
+		else if(Input.GetKey(ButToKeycode(Note.Button.SKILL)))
+			CurInput[3] = (IsLongPressed[3])
+						  ? InputType.KEEP
+						  : InputType.NONE;
+		else
+			CurInput[3] = InputType.NONE;
 	}
 }

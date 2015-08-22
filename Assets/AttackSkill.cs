@@ -3,5 +3,6 @@ public class AttackSkill {
 	public bool IsLongButton;
 	public uint TurnLength;
 	public uint[] Damage;
+	public uint[] SkillPoint;
 	public Player.PlayAnim PlayAnim;
 }
