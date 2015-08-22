@@ -516,7 +516,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: add0aecef02c0eb4da611292d55e8ce0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurJudge: 0
 --- !u!1 &892829832
 GameObject:
   m_ObjectHideFlags: 0
@@ -1129,6 +1128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BeatGen: {fileID: 1054102039}
+  BattleMan: {fileID: 267277848}
   Player: 0
 --- !u!4 &1728364946
 Transform:
@@ -1327,6 +1327,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BeatGen: {fileID: 1054102039}
+  BattleMan: {fileID: 267277848}
   Player: 1
 --- !u!4 &1762859889
 Transform:
@@ -1515,7 +1516,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: add0aecef02c0eb4da611292d55e8ce0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurJudge: 0
 --- !u!1 &2057258671
 GameObject:
   m_ObjectHideFlags: 0

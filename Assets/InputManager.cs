@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Linq;
 
 public class InputManager : MonoBehaviour {
@@ -14,15 +13,16 @@ public class InputManager : MonoBehaviour {
 	private bool[] IsLongPressed;
 
 	// interpret input & put data into queue
-	public void OnSocketRead(string input) {
+	private void OnSocketRead(string input) {
 		// message format is
-		// "player noteId judge button"
+		// "player noteId button type judge"
 		string[] splitInput = input.Split(' ');
 		int player = System.Convert.ToInt32(splitInput[0]);
-		BattleManager.Data newData = new BattleManager.Data {
+		Note.Core newData = new Note.Core {
 			Id = System.Convert.ToUInt32(splitInput[1]),
-			Judge = System.Convert.ToUInt32(splitInput[2]),
-			Button = (Note.Button)System.Enum.Parse(typeof(Note.Button), splitInput[3])
+			Button = (Note.Button)System.Enum.Parse(typeof(Note.Button), splitInput[2]),
+			Type = (InputType)System.Enum.Parse(typeof(InputType), splitInput[3]),
+			Judge = System.Convert.ToUInt32(splitInput[4])
 		};
 		// add interpreted data into data queue
 		BattleMan.DataQueue[player].Enqueue(newData);
@@ -44,39 +44,32 @@ public class InputManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		IsLongPressed = new bool[3] {true, true, true};
-		CurInput = new InputManager.InputType[3];
-		GameObject.Find("NetworkManager").GetComponent<NetworkConnector>()
-			.OnRead = this.OnSocketRead;
+		CurInput = new InputType[3];
+		GameObject.Find("NetworkManager").GetComponent<NetworkConnector>().OnRead = OnSocketRead;
 	}
 
 	// Update is called once per frame
 	void Update () {
-		int curTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
+		int curTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000) - BeatGen.StartTime;
 		UpdateInput();
 		// find first unpressed note in VALID State for player
-		Note target = BeatGen.NoteList.First(
-			n => n.IsValid && !n.IsPressed(Player)
-		);
-		// return if no target note found
+		Note target = BeatGen.NoteList.First(n => (!n.IsPressed(Player)));
 		if(target == null) return;
 		// if button is up or down, send event
-		if(CurInput[0] == InputManager.InputType.DOWN
-		   || CurInput[0] == InputManager.InputType.UP)
-			target.Press(Player, curTime - BeatGen.StartTime, Note.Button.RED, CurInput[0]);
-		else if(CurInput[1] == InputManager.InputType.DOWN
-				|| CurInput[1] == InputManager.InputType.UP)
-			target.Press(Player, curTime - BeatGen.StartTime, Note.Button.BLUE, CurInput[1]);
-		else if(CurInput[2] == InputManager.InputType.DOWN
-				|| CurInput[2] == InputManager.InputType.UP)
-			target.Press(Player, curTime - BeatGen.StartTime, Note.Button.GREEN, CurInput[2]);
+		if(CurInput[0] == InputType.DOWN || CurInput[0] == InputType.UP)
+			target.Press(Player, curTime, Note.Button.RED, CurInput[0]);
+		else if(CurInput[1] == InputType.DOWN || CurInput[1] == InputType.UP)
+			target.Press(Player, curTime, Note.Button.BLUE, CurInput[1]);
+		else if(CurInput[2] == InputType.DOWN || CurInput[2] == InputType.UP)
+			target.Press(Player, curTime, Note.Button.GREEN, CurInput[2]);
 		// if button is keep at appropriate time, send event
-		else if(System.Math.Abs(target.Time - curTime) <= InputManager.KEEP_MARGIN) {
-			if(CurInput[0] == InputManager.InputType.KEEP)
-				target.Press(Player, curTime - BeatGen.StartTime, Note.Button.RED, CurInput[0]);
-			else if(CurInput[1] == InputManager.InputType.KEEP)
-				target.Press(Player, curTime - BeatGen.StartTime, Note.Button.RED, CurInput[1]);
-			else if(CurInput[2] == InputManager.InputType.KEEP)
-				target.Press(Player, curTime - BeatGen.StartTime, Note.Button.RED, CurInput[2]);
+		else if(System.Math.Abs(target.Time - curTime) <= KEEP_MARGIN) {
+			if(CurInput[0] == InputType.KEEP)
+				target.Press(Player, curTime, Note.Button.RED, CurInput[0]);
+			else if(CurInput[1] == InputType.KEEP)
+				target.Press(Player, curTime, Note.Button.BLUE, CurInput[1]);
+			else if(CurInput[2] == InputType.KEEP)
+				target.Press(Player, curTime, Note.Button.GREEN, CurInput[2]);
 		}
 		// if button is accepted, reset long button detector
 		if(target.IsPressed(Player)) ResetLongButton();
@@ -88,50 +81,50 @@ public class InputManager : MonoBehaviour {
 
 	private void UpdateInput() {
 		// update IsLongPressed
-		if(CurInput[0] == InputManager.InputType.UP) IsLongPressed[0] = false;
-		if(CurInput[1] == InputManager.InputType.UP) IsLongPressed[1] = false;
-		if(CurInput[2] == InputManager.InputType.UP) IsLongPressed[2] = false;
+		if(CurInput[0] == InputType.UP) IsLongPressed[0] = false;
+		if(CurInput[1] == InputType.UP) IsLongPressed[1] = false;
+		if(CurInput[2] == InputType.UP) IsLongPressed[2] = false;
 		// process red button
 		if(Input.GetKeyDown(ButToKeycode(Note.Button.RED)))
-			CurInput[0] = InputManager.InputType.DOWN;
+			CurInput[0] = InputType.DOWN;
 		else if(Input.GetKeyUp(ButToKeycode(Note.Button.RED))) {
 			CurInput[0] = (IsLongPressed[0])
-						  ? InputManager.InputType.UP
-						  : InputManager.InputType.NONE;
+						  ? InputType.UP
+						  : InputType.NONE;
 		}
 		else if(Input.GetKey(ButToKeycode(Note.Button.RED)))
 			CurInput[0] = (IsLongPressed[0])
-						  ? InputManager.InputType.KEEP
-						  : InputManager.InputType.NONE;
+						  ? InputType.KEEP
+						  : InputType.NONE;
 		else
-			CurInput[0] = InputManager.InputType.NONE;
+			CurInput[0] = InputType.NONE;
 		// process blue button
 		if(Input.GetKeyDown(ButToKeycode(Note.Button.BLUE)))
-			CurInput[1] = InputManager.InputType.DOWN;
+			CurInput[1] = InputType.DOWN;
 		else if(Input.GetKeyUp(ButToKeycode(Note.Button.BLUE))){
 			CurInput[1] = (IsLongPressed[1])
-						  ? InputManager.InputType.UP
-						  : InputManager.InputType.NONE;
+						  ? InputType.UP
+						  : InputType.NONE;
 		}
 		else if(Input.GetKey(ButToKeycode(Note.Button.BLUE)))
 			CurInput[1] = (IsLongPressed[1])
-						  ? InputManager.InputType.KEEP
-						  : InputManager.InputType.NONE;
+						  ? InputType.KEEP
+						  : InputType.NONE;
 		else
-			CurInput[1] = InputManager.InputType.NONE;
+			CurInput[1] = InputType.NONE;
 		// process green button
 		if(Input.GetKeyDown(ButToKeycode(Note.Button.GREEN)))
-			CurInput[2] = InputManager.InputType.DOWN;
+			CurInput[2] = InputType.DOWN;
 		else if(Input.GetKeyUp(ButToKeycode(Note.Button.GREEN))){
 			CurInput[2] = (IsLongPressed[2])
-						  ? InputManager.InputType.UP
-						  : InputManager.InputType.NONE;
+						  ? InputType.UP
+						  : InputType.NONE;
 		}
 		else if(Input.GetKey(ButToKeycode(Note.Button.GREEN)))
 			CurInput[2] = (IsLongPressed[2])
-						  ? InputManager.InputType.KEEP
-						  : InputManager.InputType.NONE;
+						  ? InputType.KEEP
+						  : InputType.NONE;
 		else
-			CurInput[2] = InputManager.InputType.NONE;
+			CurInput[2] = InputType.NONE;
 	}
 }

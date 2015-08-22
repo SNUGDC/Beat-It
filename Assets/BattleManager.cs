@@ -7,18 +7,10 @@ public class BattleManager : MonoBehaviour {
 	public const float NETWORK_DELAY = 0.05f;
 	public const float FLIP_DELAY = 0.6f;
 
-	public struct Data {
-		public uint Id;
-		public uint Judge;
-		public Note.Button Button;
-		public InputManager.InputType Type;
-	}
-
 	public Player[] Player;
 	public JudgeDisplayer[] JudgeDisplayer;
-	public Queue<BattleManager.Data>[] DataQueue;
+	public Queue<Note.Core>[] DataQueue;
 	public Text ComboText;
-	public Text BattleText; // TODO : remove this
 
 	private Note.Button LastButton;
 	private InputManager.InputType LastType;
@@ -26,20 +18,15 @@ public class BattleManager : MonoBehaviour {
 	private int AttackerIndex;
 
 	void Start () {
-		this.LastButton = Note.Button.NONE;
-		this.LastType = InputManager.InputType.NONE;
-		this.CurrentCombo = 0;
-		this.AttackerIndex = 0;
-		Player[1].GetComponent<SpriteRenderer>().material.color
-			= Color.white;
-		Player[0].GetComponent<SpriteRenderer>().material.color
-			= Color.red;
-		DataQueue = new Queue<BattleManager.Data>[2] {
-			new Queue<BattleManager.Data>(),
-			new Queue<BattleManager.Data>()
-		};
+		LastButton = Note.Button.NONE;
+		LastType = InputManager.InputType.NONE;
+		CurrentCombo = 0;
+		AttackerIndex = 0;
+		Player[0].GetComponent<SpriteRenderer>().material.color = Color.red;
+		Player[1].GetComponent<SpriteRenderer>().material.color = Color.white;
+		DataQueue = new Queue<Note.Core>[2] { new Queue<Note.Core>(), new Queue<Note.Core>() };
 	}
-	
+
 	void Update () {
 	}
 
@@ -48,13 +35,13 @@ public class BattleManager : MonoBehaviour {
 		AttackSkill skill = targetPlayer.GetAttackSkill(but);
 		if(skill.IsLongButton && playerIndex == AttackerIndex
 		   && but == LastButton && LastType != InputManager.InputType.UP) {
-		   	targetPlayer.Anim.SetTrigger("hit");
-		   	this.LastButton = Note.Button.NONE;
-		   	this.LastType = InputManager.InputType.NONE;
+			targetPlayer.Anim.SetTrigger("hit");
+			this.LastButton = Note.Button.NONE;
+			this.LastType = InputManager.InputType.NONE;
 		}
 	}
 
-	public bool GetReady(int playerIndex, Note.Button but, InputManager.InputType type) {
+	public bool IsValidInput(int playerIndex, Note.Button but, InputManager.InputType type) {
 		Player targetPlayer = Player[playerIndex];
 		if(playerIndex == AttackerIndex) {
 			AttackSkill skill = targetPlayer.GetAttackSkill(but);
@@ -74,7 +61,6 @@ public class BattleManager : MonoBehaviour {
 			   && type == InputManager.InputType.KEEP) {
 				return false;
 			}
-			skill.PlayAnim(targetPlayer.Anim, combo, type == InputManager.InputType.UP);
 			return true;
 		}
 		else {
@@ -82,18 +68,30 @@ public class BattleManager : MonoBehaviour {
 			if(type == InputManager.InputType.KEEP || type == InputManager.InputType.UP) {
 				return false;
 			}
+			else return true;
+		}
+	}
+
+	public void GetReady(int playerIndex, Note.Button but, InputManager.InputType type) {
+		Player targetPlayer = Player[playerIndex];
+		if(playerIndex == AttackerIndex) {
+			AttackSkill skill = targetPlayer.GetAttackSkill(but);
+			uint combo = this.GetNextCombo(but, type, skill);
+			// skill is not long button -> ignore long button input
+			skill.PlayAnim(targetPlayer.Anim, combo, type == InputManager.InputType.UP);
+		}
+		else {
 			DefendSkill skill = targetPlayer.GetDefendSkill(but);
 			uint combo = 1;
 			skill.PlayAnim(targetPlayer.Anim, combo, false);
-			return true;
 		}
 	}
 
 	public IEnumerator DoBattle(uint id, bool flip) {
 		yield return new WaitForSeconds(BattleManager.NETWORK_DELAY);
 		
-		BattleManager.Data Player1Data = GetData(0, id);
-		BattleManager.Data Player2Data = GetData(1, id);
+		Note.Core Player1Data = GetData(0, id);
+		Note.Core Player2Data = GetData(1, id);
 
 		// set judge text
 		JudgeDisplayer[0].SetJudge(Player1Data.Judge / 10.0f, Player1Data.Button);
@@ -103,8 +101,8 @@ public class BattleManager : MonoBehaviour {
 		Player Attacker = (this.AttackerIndex == 0) ? Player[0] : Player[1];
 		Player Defender = (this.AttackerIndex == 0) ? Player[1] : Player[0];
 
-		BattleManager.Data AttackData = (this.AttackerIndex == 0) ? Player1Data : Player2Data;
-		BattleManager.Data DefendData = (this.AttackerIndex == 0) ? Player2Data : Player1Data;
+		Note.Core AttackData = (this.AttackerIndex == 0) ? Player1Data : Player2Data;
+		Note.Core DefendData = (this.AttackerIndex == 0) ? Player2Data : Player1Data;
 
 		// calculate combo
 		AttackSkill skill = Attacker.GetAttackSkill(AttackData.Button);
@@ -125,8 +123,8 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	// core battle logic
-	private void BattleCore(Player attacker, BattleManager.Data attackData,
-							Player defender, BattleManager.Data defendData) {
+	private void BattleCore(Player attacker, Note.Core attackData,
+							Player defender, Note.Core defendData) {
 		AttackSkill attackerSkill = attacker.GetAttackSkill(attackData.Button);
 		DefendSkill defenderSkill = defender.GetDefendSkill(defendData.Button);
 		DefendSkill.DefendState defendResult;
@@ -147,10 +145,8 @@ public class BattleManager : MonoBehaviour {
 												  attackData.Judge <= defendData.Judge,
 												  attackData.Type == InputManager.InputType.UP);
 		}
-		// TODO : remove this if-else block
-		// print result to BattleText
-		BattleText.text = defendResult.ToString();
-
+		attacker.Anim.ResetTrigger("action");
+		defender.Anim.ResetTrigger("action");
 		switch(defendResult) {
 			case DefendSkill.DefendState.GUARD : {
 				// defender Guards attack, and attacker keeps attack
@@ -237,15 +233,15 @@ public class BattleManager : MonoBehaviour {
 	
 	// dequeue one note from DataQueue
 	// if no data exists or id dismatches, return initialized data
-	private BattleManager.Data GetData(int player, uint id) {
+	private Note.Core GetData(int player, uint id) {
 		if(DataQueue[player].Count != 0 && DataQueue[player].Peek().Id == id) {
 			return DataQueue[player].Dequeue();
 		}
 		else {
 			if(DataQueue[0].Count != 0) Debug.Log(DataQueue[0].Peek().Id);
 			else Debug.Log(id + " Not Found!");
-			return new BattleManager.Data {
-				Id = id, Judge = 0, Button = Note.Button.NONE
+			return new Note.Core {
+				Id = id, Button = Note.Button.NONE, Type = InputManager.InputType.NONE, Judge = 0
 			};
 		}
 	}

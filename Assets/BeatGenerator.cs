@@ -11,7 +11,7 @@ public class BeatGenerator : MonoBehaviour {
 	public Transform NotePrefab; // prefab for note
 	public Queue<Note> NoteList = new Queue<Note>(); // List of Notes
 	public int StartTime {
-		get { return this._StartTime; }
+		get { return _StartTime; }
 	}
 
 	private int _StartTime; // Starting time of battle
@@ -19,9 +19,8 @@ public class BeatGenerator : MonoBehaviour {
 	void Start() {
 		// ReadBeat("test_data");
 		// generate test data
-		for(int i = 0; i <= 100; ++i) {
-			Note newNote = new Note((uint)i, 2000000 * (i + 3));
-			//if(i % 7 == 0) newNote.Flip = true;
+		for(int i = 1; i <= 100; ++i) {
+			Note newNote = new Note((uint)i, 2000000 * (i + 3), (i % 7) == 0);
 			NoteList.Enqueue(newNote);
 		}
 		_StartTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
@@ -39,8 +38,7 @@ public class BeatGenerator : MonoBehaviour {
 		Note curNote = NoteList.Peek();
 		if(curNote != null && curTime >= curNote.Time + this.StartTime) {
 			this.GetComponent<AudioSource>().Play();
-			curNote = this.NoteList.Dequeue();
-			curNote.Kill();
+			NoteList.Dequeue().Kill();
 		}
 	}
 
@@ -51,8 +49,9 @@ public class BeatGenerator : MonoBehaviour {
 		int noteCount = data["notecount"].AsInt;
 		for(int i = 0; i < noteCount; i++) {
 			var curData = data["notes"][i];
-			Note newNote = new Note((uint)i, curData["time"].AsInt + BEAT_DELAY);
-			newNote.Flip = curData["flip"].AsBool;
+			Note newNote = new Note((uint)i,
+									curData["time"].AsInt + BEAT_DELAY,
+									curData["flip"].AsBool);
 			NoteList.Enqueue(newNote);
 		}
 	}

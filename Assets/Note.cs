@@ -1,99 +1,87 @@
 ﻿using UnityEngine;
 
 public class Note{
+	public struct Core {
+		public uint Id;
+		public Button Button;
+		public InputManager.InputType Type;
+		public uint Judge;
+	}
 	public enum Button {NONE, RED, BLUE, GREEN};
 
-	public bool Flip; // flips attacker
 	public bool IsValid; // is shown in display
 	public int Time; // time of note
 
-	private Button[] PressedButton; // accepted input for each player
-	private InputManager.InputType[] PressedInput;
-	private uint Id; // Id of Current Note
-	private uint[] Judge; // judge of each player
-
-	// default constructor
-	public Note(uint id, int time) {
-		Id = id;
-		Time = time;
-		Flip = false;
-		IsValid = false;
-		PressedButton = new Button[2] {Button.NONE, Button.NONE};
-		PressedInput = new InputManager.InputType[2] {InputManager.InputType.NONE,
-													  InputManager.InputType.NONE};
-		Judge = new uint[2] {0, 0};
-	}
+	private Core[] CoreData;
+	private bool Flip;
 
 	public bool IsPressed(int player) {
-		return PressedButton[player] != Note.Button.NONE;
+		return CoreData[player].Button != Button.NONE;
+	}
+
+	// default constructor
+	public Note(uint id, int time, bool flip) {
+		CoreData = new Core[2];
+		IsValid = false;
+		Time = time;
+		CoreData[0].Id = CoreData[1].Id = id;
+		CoreData[0].Button = CoreData[1].Button = Button.NONE;
+		CoreData[0].Type = CoreData[1].Type = InputManager.InputType.NONE;
+		CoreData[0].Judge = CoreData[1].Judge = 0;
+		Flip = flip;
 	}
 
 	// create note on display
 	public void Appear(Transform notePrefab) {
-		Transform newTrans = Object.Instantiate(notePrefab,
-												new Vector3(0, -19.72f, -1 + 0.001f * Id),
-												Quaternion.identity) as Transform;
+		Transform newTrans = Object.Instantiate(
+			notePrefab,
+			new Vector3(0, -19.72f, -1 + 0.001f * CoreData[0].Id),
+			Quaternion.identity
+		) as Transform;
 		IsValid = true;
 		newTrans.parent = GameObject.Find("BeatGenerator").transform;
 		newTrans.GetComponent<NoteMover>().NoteData = this;
 	}
 
 	// accept user input
-	public bool Press(int player, int time, Note.Button but, InputManager.InputType type) {
-		float judge = 1 - System.Math.Abs(time - this.Time)
-						   / (float)(BeatGenerator.BEAT_MARGIN);
+	public void Press(int player, int time, Button but, InputManager.InputType type) {
+		var manager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
+		float judge = 1 - System.Math.Abs(time - this.Time) / (float)(BeatGenerator.BEAT_MARGIN);
 		// if timing is bad & UP signal is received
 		if(judge <= 0 && type == InputManager.InputType.UP) {
-			GameObject.Find("BattleManager").GetComponent<BattleManager>().PressUp(player, but);
-			return false;	
+			manager.PressUp(player, but);
 		}
 		// if timing is good & is valid input, accept
-		else if(judge > 0 && GameObject.Find("BattleManager").GetComponent<BattleManager>()
-															 .GetReady(player, but, type)){
-			this.PressedButton[player] = but;
-			this.PressedInput[player] = type;
-			this.Judge[player] = (uint)(judge * 1000);
-			return true;
+		else if(judge > 0 && manager.IsValidInput(player, but, type)){
+			manager.GetReady(player, but, type);
+			CoreData[player].Button = but;
+			CoreData[player].Type = type;
+			CoreData[player].Judge = (uint)(judge * 1000);
 		}
-		else return false;
 	}
 
 	// kill note from display
 	// calls actual battle logic
 	public void Kill() {
-		NetworkConnector network
-			= GameObject.Find("NetworkManager").GetComponent<NetworkConnector>();
-		BattleManager battleManager
-			= GameObject.Find("BattleManager").GetComponent<BattleManager>();
-		if(network.LocalPlayer[0]) {
-			battleManager.DataQueue[0].Enqueue(new BattleManager.Data{
-				Id = this.Id,
-				Judge = this.Judge[0],
-				Button = this.PressedButton[0],
-				Type = this.PressedInput[0]
-			});
-		}
+		var network = GameObject.Find("NetworkManager").GetComponent<NetworkConnector>();
+		var manager = GameObject.Find("BattleManager").GetComponent<BattleManager>();
+		if(network.LocalPlayer[0]) manager.DataQueue[0].Enqueue(CoreData[0]);
 		else {
 			network.SendString("0"
-							   + ' ' + Id.ToString()
-							   + ' ' + PressedButton[0].ToString()
-							   + ' ' + this.Judge[0].ToString());
+							   + ' ' + CoreData[0].Id.ToString()
+							   + ' ' + CoreData[0].Button.ToString()
+							   + ' ' + CoreData[0].Type.ToString()
+							   + ' ' + CoreData[0].Judge.ToString());
 		}
-		if(network.LocalPlayer[1]) {
-			battleManager.DataQueue[1].Enqueue(new BattleManager.Data{
-				Id = this.Id,
-				Judge = this.Judge[1],
-				Button = this.PressedButton[1],
-				Type = this.PressedInput[1]
-			});
-		}
+		if(network.LocalPlayer[1]) manager.DataQueue[1].Enqueue(CoreData[1]);
 		else {
 			network.SendString("1"
-							   + ' ' + Id.ToString()
-							   + ' ' + PressedButton[1].ToString()
-							   + ' ' + this.Judge[1].ToString());
+							   + ' ' + CoreData[1].Id.ToString()
+							   + ' ' + CoreData[1].Button.ToString()
+							   + ' ' + CoreData[1].Type.ToString()
+							   + ' ' + CoreData[1].Judge.ToString());
 		}
 		// call actual battle logic
-		battleManager.StartCoroutine(battleManager.DoBattle(this.Id, this.Flip));
+		manager.StartCoroutine(manager.DoBattle(CoreData[0].Id, Flip));
 	}
 }
