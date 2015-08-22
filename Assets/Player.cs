@@ -4,18 +4,12 @@ using System.Collections;
 public class Player : MonoBehaviour {
 	public delegate void PlayAnim(Animator target, uint combo, bool isUp);
 	public Animator Anim; // Mechanim animator for this player
-	public TextMesh HpBar; // Hp Text
-	public TextMesh SpBar; // Sp Text
-	private int Hp;
-	private int Sp;
+	public HpBar Hp; // Hp Text
+	public SpBar Sp; // Sp Text
 	private AttackSkill[] AttackSkillList;
 	private DefendSkill[] DefendSkillList;
 
 	void Start() {
-		//Hp = 100;
-		//this.HpBar.text = this.Hp.ToString();
-		//Sp = 0;
-		//this.SpBar.text = this.Sp.ToString();
 		AttackSkillList = new AttackSkill[3] {
 			new AttackSkill(), new AttackSkill(), new AttackSkill()
 		};
@@ -160,8 +154,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public void DecreaseHp(int diff) {
-		//this.Hp -= diff;
-		//this.HpBar.text = this.Hp.ToString();
+		Hp.Increase(-diff);
 	}
 
 	// shortcut for float argument
@@ -170,7 +163,6 @@ public class Player : MonoBehaviour {
 	}
 
 	public void IncreaseSp(int diff) {
-		//this.Sp += diff;
-		//this.SpBar.text = this.Sp.ToString();
+		Sp.Increase(diff);
 	}
 }

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class BattleManager : MonoBehaviour {
+	public const float FLIP_DELAY = 0.6f;
 
 	public Player[] Player;
 	public JudgeDisplayer[] JudgeDisplayer;
@@ -119,7 +120,7 @@ public class BattleManager : MonoBehaviour {
 		this.LastButton = AttackData.Button;
 		this.LastType = AttackData.Type;
 		if(flip) {
-			if(!CancelFlip) FlipAttacker();
+			if(!CancelFlip) StartCoroutine(FlipAttacker());
 			else CancelFlip = false;
 		}
 	}
@@ -205,7 +206,7 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	// flip attacking player
-	private void FlipAttacker() {
+	private IEnumerator FlipAttacker() {
 		// flip attacker sign & reset combo
 		if(this.AttackerIndex == 0) {
 			this.AttackerIndex = 1;
@@ -224,6 +225,8 @@ public class BattleManager : MonoBehaviour {
 		this.CurrentCombo = 0;
 		this.LastButton = Note.Button.NONE;
 		this.LastType = InputManager.InputType.NONE;
+
+		yield return new WaitForSeconds(FLIP_DELAY);
 
 		// reset all triggers to avoid unwanted animation
 		foreach(AnimatorControllerParameter param
