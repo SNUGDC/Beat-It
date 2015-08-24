@@ -6,7 +6,7 @@ public class SpBar : MonoBehaviour {
 	public const float SPEED = 14;
 	public const int MAX_SP = 10000;
 
-	public Transform Content;
+	public RectTransform Content;
 	public Direction MoveDir;
 	public int CurVal {
 		get { return _CurVal; }
@@ -37,8 +37,8 @@ public class SpBar : MonoBehaviour {
 			_CurVal = Target;
 		}
 		distance = (MoveDir == Direction.LEFT) ? distance : -distance;
-		this.transform.Translate(distance * Time.deltaTime, 0, 0);
-		Content.Translate(-distance * Time.deltaTime, 0, 0);
+		this.transform.Translate(distance, 0, 0);
+		Content.Translate(-distance, 0, 0);
 	}
 
 	public void Increase(int data) {

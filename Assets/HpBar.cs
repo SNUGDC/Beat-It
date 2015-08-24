@@ -6,13 +6,13 @@ public class HpBar : MonoBehaviour {
 	public const float SPEED = 14;
 	public const int MAX_HP = 300;
 
-	public Transform Content;
+	public RectTransform Content;
 	public Direction MoveDir;
 	public int CurVal {
-		get { return _CurVal; }
+		get { return (int)_CurVal; }
 	}
-	private int _CurVal;
-	private int Target;
+	private float _CurVal;
+	private float Target;
 
 	// Use this for initialization
 	void Start () {
@@ -26,19 +26,19 @@ public class HpBar : MonoBehaviour {
 		float distance = 0;
 		if(_CurVal > Target + threshold) { 
 			distance = SPEED;
-			_CurVal -= (int)threshold;
+			_CurVal -= threshold;
 		}
 		else if(_CurVal < Target - threshold) {
 			distance = -SPEED;
-			_CurVal += (int)threshold;
+			_CurVal += threshold;
 		}
 		else {
-			distance = (float)(_CurVal - Target) / MAX_HP * width;
+			distance = (_CurVal - Target) / MAX_HP * width;
 			_CurVal = Target;
 		}
 		distance = (MoveDir == Direction.RIGHT) ? distance : -distance;
-		this.transform.Translate(distance * Time.deltaTime, 0, 0);
-		Content.Translate(-distance * Time.deltaTime, 0, 0);
+		GetComponent<RectTransform>().Translate(distance, 0, 0);
+		Content.Translate(-distance, 0, 0);
 	}
 
 	public void Increase(int data) {
