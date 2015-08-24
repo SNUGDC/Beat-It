@@ -23,6 +23,7 @@ public class PlayerScript : MonoBehaviour {
 		database = GameObject.Find ("PlayerDatabase").GetComponent<PlayerDB>();
 		playerIDMax = database.characters.Count - 1;
 		UpdateCharacter (playerID);
+		ClearSkillImageObjects ();
 		UpdateSkillImageObjects ();
 		// correction of text scale
 		var scale = readyText.gameObject.transform.localScale;
@@ -31,7 +32,7 @@ public class PlayerScript : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
 		readyText.text = (isReady)? "Ready" : "Not Ready";
 
 		bool isChanged = false;
@@ -74,16 +75,19 @@ public class PlayerScript : MonoBehaviour {
 			// move skill image to desired position
 			var panelWidth = skillPanel.GetComponent<RectTransform>().rect.width;
 			var panelHeight = skillPanel.GetComponent<RectTransform>().rect.height;
-			go.transform.localPosition = new Vector3(-0.4f * panelWidth, 0.0f, 0.0f);
-			go.GetComponent<RectTransform>().sizeDelta = new Vector2 (0.8f*panelHeight, 0.8f*panelHeight);
+			go.transform.localPosition = new Vector3(-0.37f * panelWidth, 0.0f, 0.0f);
+			go.transform.localScale = Vector3.one;
+			//go.GetComponent<RectTransform>().sizeDelta = new Vector2 (0.8f*panelHeight, 0.8f*panelHeight);
 			// move skill image position horizontally depending on count
-			var iconWidth = go.GetComponent<RectTransform>().rect.width;
+			//var iconWidth = go.GetComponent<RectTransform>().rect.width;
 			Vector3 pos = go.transform.position;
-			pos.x += iconWidth * 1.25f * count;
+			pos.x += panelHeight * 1.2f * count * Screen.height/600;
 			go.transform.position = pos;
 			count++;
 		}
 	}
+
+
 
 	void ClearSkillImageObjects()
 	{
