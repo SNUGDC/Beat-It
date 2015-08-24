@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class Song {
 	public string name;
 	public Sprite sprite;
+	public AudioClip music;
 }
 
 public class RecordScript : MonoBehaviour {
@@ -16,12 +17,17 @@ public class RecordScript : MonoBehaviour {
 	public List<Song> songs;
 	private Animator animator;
 	public Text songText;
+
+	private AudioSource audio;
 	void Start()
 	{
 		animator = GetComponent<Animator>();
 		indexMax = songs.Count - 1;
 		GetComponent<Image>().sprite = songs[index].sprite;
 		songText.text = songs[index].name;
+		audio = GetComponent<AudioSource> ();
+		audio.clip = songs [index].music;
+		audio.Play ();
 	}
 	void Update()
 	{
@@ -30,6 +36,8 @@ public class RecordScript : MonoBehaviour {
 			animator.SetTrigger ("recordChanged");
 			GetComponent<Image>().sprite = songs[index].sprite;
 			songText.text = songs[index].name;
+			audio.clip = songs[index].music;
+			audio.Play ();
 		}
 	}
 	/*IEnumerator UpdateSprite()
