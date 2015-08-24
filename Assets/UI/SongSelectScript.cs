@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 
 public class SongSelectScript : MonoBehaviour {
-	
-	// TODO: selecting song
+
+	public PlayerScript player1;
+	public PlayerScript player2;
 	void Update () {
-		if (Input.GetKeyDown (KeyCode.S) || Input.GetKeyDown (KeyCode.K)) {
-		}
-		else if (Input.GetKeyDown (KeyCode.Return))
+		if (Input.GetKeyDown (KeyCode.Return) && player1.isReady && player2.isReady)
 			Application.LoadLevel ("sceneBattle");
 	}
 }

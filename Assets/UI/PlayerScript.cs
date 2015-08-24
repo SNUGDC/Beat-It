@@ -10,7 +10,9 @@ public class PlayerScript : MonoBehaviour {
 	public int playerID = 0;
 	private int playerIDMax;
 	public int playerType;
+	[HideInInspector] public bool isReady = false;
 
+	public Text readyText;
 	private Image imageRenderer;
 	
 	public GameObject skillImagePrefab;
@@ -21,12 +23,17 @@ public class PlayerScript : MonoBehaviour {
 		database = GameObject.Find ("PlayerDatabase").GetComponent<PlayerDB>();
 		playerIDMax = database.characters.Count - 1;
 		UpdateCharacter (playerID);
-		UpdateCharacterSprite ();
 		UpdateSkillImageObjects ();
+		// correction of text scale
+		var scale = readyText.gameObject.transform.localScale;
+		scale.x = (playerType == 1)? -Mathf.Abs (scale.x) : Mathf.Abs (scale.x);
+		readyText.gameObject.transform.localScale = scale;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		readyText.text = (isReady)? "Ready" : "Not Ready";
+
 		bool isChanged = false;
 		if ((playerType == 1)? Input.GetKeyDown (KeyCode.A) : Input.GetKeyDown (KeyCode.J)) {
 			playerID = (playerID == 0)? playerIDMax : playerID - 1;
@@ -34,10 +41,11 @@ public class PlayerScript : MonoBehaviour {
 		} else if ((playerType == 1)? Input.GetKeyDown (KeyCode.D) : Input.GetKeyDown (KeyCode.L)) {
 			playerID = (playerID == playerIDMax)? 0 : playerID + 1;
 			isChanged = true;
+		} else if ((playerType == 1)? Input.GetKeyDown (KeyCode.Q) : Input.GetKeyDown(KeyCode.P)) {
+			isReady = !isReady;
 		}
 		if (isChanged) {
 			UpdateCharacter (playerID);
-			UpdateCharacterSprite ();
 			ClearSkillImageObjects();
 			UpdateSkillImageObjects();
 		}
@@ -47,10 +55,6 @@ public class PlayerScript : MonoBehaviour {
 	{
 		character = database.characters[playerID];
 		imageRenderer.sprite = character.sprite;
-	}
-
-	void UpdateCharacterSprite()
-	{
 		Vector3 scale = transform.localScale;
 		scale.x = (playerType == 1) ? -Mathf.Abs (transform.localScale.x) : Mathf.Abs (transform.localScale.x);
 		transform.localScale = scale;
