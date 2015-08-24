@@ -69,9 +69,11 @@ public class PlayerScript : MonoBehaviour {
 			script.skillName = skill.name; script.description = skill.description;
 			script.sprite = skill.sprite;
 			script.Setup();
-			go.transform.SetParent(transform.FindChild ("SkillPanel " + playerType.ToString ()));
+			GameObject skillPanel = transform.FindChild ("SkillPanel " + playerType.ToString ()).gameObject;
+			go.transform.SetParent(skillPanel.transform);
 			// move skill image to desired position
-			go.transform.localPosition = (playerType == 1)? new Vector3(39f, 0f, 0f) : new Vector3(-59f, 0f, 0f);
+			var panelWidth = skillPanel.GetComponent<RectTransform>().rect.width;
+			go.transform.localPosition = (playerType == 1)? new Vector3(panelWidth*0.4f, 0f, 0f) : new Vector3(-panelWidth*0.4f, 0f, 0f);
 			// set scale to normal again (because the scale of the child object inherits the parent)
 			Vector3 scale = go.transform.localScale;
 			scale.x = (playerType == 1) ? -Mathf.Abs (transform.localScale.x) : Mathf.Abs (transform.localScale.x);
