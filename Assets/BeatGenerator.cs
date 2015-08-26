@@ -19,7 +19,7 @@ public class BeatGenerator : MonoBehaviour {
 	private int _StartTime; // Starting time of battle
 
 	void Start() {
-		ReadBeatFromTxt("exp2_easy");
+		ReadBeatFromTxt("exp1");
 		// generate test data
 		/*for(int i = 1; i <= 100; ++i) {
 			Note newNote = new Note((uint)i, 1000000 * (i + 3), (i % 7) == 0);
