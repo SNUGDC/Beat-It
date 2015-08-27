@@ -18,8 +18,9 @@ public class BeatGenerator : MonoBehaviour {
 
 	private int _StartTime; // Starting time of battle
 
+	public string songName;
 	void Start() {
-		ReadBeatFromTxt("exp1");
+		ReadBeatFromTxt(songName);
 		// generate test data
 		/*for(int i = 1; i <= 100; ++i) {
 			Note newNote = new Note((uint)i, 1000000 * (i + 3), (i % 7) == 0);
@@ -84,14 +85,15 @@ public class BeatGenerator : MonoBehaviour {
                         notecount++;
                         Note newNote = new Note(notecount, Convert.ToInt32(count * beatLen * 1000000) + BEAT_DELAY, false);
                         NoteList.Enqueue(newNote);
-                        count++;
+						count++;
                         break;
                     case '-':
                         count++; break;
                     case ' ':
                         break;
                     case ';':
-                        NoteList.Last().Flip = true; break;
+                        NoteList.Last().Flip = true; 
+						break;
                 }
             }
         }
