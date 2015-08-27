@@ -2,7 +2,7 @@
 using System.Linq;
 
 public class InputManager : MonoBehaviour {
-	public const int KEEP_MARGIN = 10000;
+	public const int KEEP_MARGIN = 50000;
 	public enum InputType {NONE, DOWN, KEEP, UP};
 
 	public BeatGenerator BeatGen;
@@ -75,7 +75,9 @@ public class InputManager : MonoBehaviour {
 				target.Press(Player, curTime, Note.Button.GREEN, CurInput[2]);
 		}
 		// if button is accepted, reset long button detector
-		if(target.IsPressed(Player)) ResetLongButton();
+		if(target.IsPressed(Player)){
+			ResetLongButton();
+		}
 	}
 
 	private void ResetLongButton() {

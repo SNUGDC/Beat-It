@@ -15,6 +15,8 @@ public class Note{
 	private Core[] CoreData;
 	public bool Flip;
 
+	public InputManager.InputType CurType() { return this.CoreData[0].Type; }
+
 	public bool IsPressed(int player) {
 		return CoreData[player].Button != Button.NONE;
 	}
@@ -53,6 +55,7 @@ public class Note{
 		}
 		// if timing is good & is valid input, accept
 		else if(judge > 0 && manager.IsValidInput(player, but, type)){
+			Debug.Log(type);
 			manager.GetReady(player, but, type);
 			manager.ShowJudge(player, (uint)(judge * 50) + 50);
 			CoreData[player].Button = but;
@@ -68,6 +71,6 @@ public class Note{
 		manager.DataQueue[0].Enqueue(CoreData[0]);
 		manager.DataQueue[1].Enqueue(CoreData[1]);
 		// call actual battle logic
-		manager.DoBattle(CoreData[0].Id, Flip);
+		manager.DoBattle(CoreData[0].Id, Flip, Time);
 	}
 }
