@@ -8,6 +8,7 @@ public class BattleManager : MonoBehaviour {
 
 	public Player[] Player;
 	public Animator[] JudgeAnim;
+	public Animator[] EffectAnim;
 	public Queue<Note.Core>[] DataQueue;
 	public Text ComboText;
 
@@ -39,8 +40,8 @@ public class BattleManager : MonoBehaviour {
 		if(skill.IsLongButton && playerIndex == AttackerIndex
 		   && but == LastButton && LastType != InputManager.InputType.UP) {
 			targetPlayer.Anim.SetTrigger("hit");
-			this.LastButton = Note.Button.NONE;
-			this.LastType = InputManager.InputType.NONE;
+			LastButton = Note.Button.NONE;
+			LastType = InputManager.InputType.NONE;
 		}
 	}
 

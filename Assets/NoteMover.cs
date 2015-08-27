@@ -32,6 +32,7 @@ public class NoteMover : MonoBehaviour {
 		Object.Destroy(LeftObject);
 		Object.Destroy(RightObject);
 		GetComponent<Animator>().Play("Note");
+		GetComponent<AudioSource>().Play();
 		yield return new WaitForSeconds(delay);
 		Object.Destroy(this.gameObject);
 	}
