@@ -13,6 +13,7 @@ public class PlayerScript : MonoBehaviour {
 	[HideInInspector] public bool isReady = false;
 
 	public Text readyText;
+	public Text nameText;
 	private Image imageRenderer;
 	
 	public GameObject skillImagePrefab;
@@ -34,7 +35,7 @@ public class PlayerScript : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		readyText.text = (isReady)? "Ready" : "Not Ready";
-
+		nameText.text = "Character" + (playerID + 1).ToString();
 		bool isChanged = false;
 		if ((playerType == 1)? Input.GetKeyDown (KeyCode.A) : Input.GetKeyDown (KeyCode.J)) {
 			playerID = (playerID == 0)? playerIDMax : playerID - 1;
