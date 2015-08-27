@@ -81,9 +81,11 @@ public class BattleManager : MonoBehaviour {
 		}
 		else {
 			DefendSkill skill = targetPlayer.GetDefendSkill(but);
-			uint combo = 1;
 			targetPlayer.Anim.ResetTrigger("action");
-			skill.PlayAnim(targetPlayer.Anim, combo, false);
+			skill.PlayAnim(targetPlayer.Anim, 1, false);
+			if(skill.Name == "Guard") {
+				EffectAnim[playerIndex].Play("guardmake", -1, 0);
+			}
 		}
 	}
 
@@ -95,35 +97,28 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	public void DoBattle(uint id, bool flip, int time) {
-		
-		Note.Core Player1Data = GetData(0, id);
-		Note.Core Player2Data = GetData(1, id);
-
-		if(Player1Data.Judge < 50) JudgeAnim[0].Play("miss", -1, 0);
-		if(Player2Data.Judge < 50) JudgeAnim[1].Play("miss", -1, 0);
-
 		// assign basic variables
-		Player Attacker = (this.AttackerIndex == 0) ? Player[0] : Player[1];
-		Player Defender = (this.AttackerIndex == 0) ? Player[1] : Player[0];
-
-		Note.Core AttackData = (this.AttackerIndex == 0) ? Player1Data : Player2Data;
-		Note.Core DefendData = (this.AttackerIndex == 0) ? Player2Data : Player1Data;
-
+		Player attacker = (this.AttackerIndex == 0) ? Player[0] : Player[1];
+		Player defender = (this.AttackerIndex == 0) ? Player[1] : Player[0];
+		Note.Core attackData = (this.AttackerIndex == 0) ? GetData(0, id) : GetData(1, id);
+		Note.Core defendData = (this.AttackerIndex == 0) ? GetData(1, id) : GetData(0, id);
+		// show miss layer
+		if(attackData.Judge < 50) JudgeAnim[0].Play("miss", -1, 0);
+		if(defendData.Judge < 50) JudgeAnim[1].Play("miss", -1, 0);
 		// calculate combo
-		AttackSkill skill = Attacker.GetAttackSkill(AttackData.Button);
-		this.CurrentCombo = this.GetNextCombo(
-			AttackData.Button,
-			AttackData.Type,
-			skill
+		CurrentCombo = GetNextCombo(
+			attackData.Button,
+			attackData.Type,
+			attacker.GetAttackSkill(attackData.Button)
 		);
 		ComboText.text = CurrentCombo.ToString() + " Combo";
 
 		// call BattleCore
-		BattleCore(Attacker, AttackData, Defender, DefendData, time);
+		BattleCore(attacker, attackData, defender, defendData, time);
 
 		// post-battle logic
-		this.LastButton = AttackData.Button;
-		this.LastType = AttackData.Type;
+		this.LastButton = attackData.Button;
+		this.LastType = attackData.Type;
 		if(flip) {
 			if(!CancelFlip) StartCoroutine(FlipAttacker());
 			else CancelFlip = false;
@@ -135,10 +130,17 @@ public class BattleManager : MonoBehaviour {
 							Player defender, Note.Core defendData, int time) {
 		AttackSkill attackerSkill = attacker.GetAttackSkill(attackData.Button);
 		DefendSkill defenderSkill = defender.GetDefendSkill(defendData.Button);
+		Animator attackerEffect = EffectAnim[AttackerIndex];
+		Animator defenderEffect = EffectAnim[(AttackerIndex == 0) ? 1 : 0];
 		DefendSkill.DefendState defendResult;
 		// if both player didn't press button, set result to NONE
 		if(defendData.Button == Note.Button.NONE && attackData.Button == Note.Button.NONE)
 			defendResult = DefendSkill.DefendState.NONE;
+		else if(defendData.Button == Note.Button.NONE
+				&& attackData.Type == InputManager.InputType.DOWN
+				&& attackerSkill.IsLongButton) {
+			defendResult = DefendSkill.DefendState.GUARD;
+		}
 		// if defender didn't press button, set result to HIT
 		else if(defendData.Button == Note.Button.NONE) {
 			defendResult = DefendSkill.DefendState.HIT;
@@ -157,12 +159,16 @@ public class BattleManager : MonoBehaviour {
 			case DefendSkill.DefendState.GUARD : {
 				// defender Guards attack, and attacker keeps attack
 				try {
+					if(defenderSkill.Name == "Guard") defenderEffect.Play("guardsuccess", -1, 0);
 					defender.Anim.SetTrigger("action");
 					defender.DecreaseHp(attackerSkill.Damage[this.CurrentCombo - 1]
 										* (1 - defenderSkill.DefendRate));
 					defender.IncreaseSp((int)defenderSkill.SkillPoint);
 				} catch {}
 				try {
+					if(attackerSkill.IsLongButton && attackData.Type == InputManager.InputType.DOWN) {
+						this.LongButtonTime = time;
+					}
 					attacker.Anim.SetTrigger("action");
 					attacker.DecreaseHp(defenderSkill.Damage);
 				} catch {}
@@ -177,7 +183,8 @@ public class BattleManager : MonoBehaviour {
 					defender.IncreaseSp((int)defenderSkill.SkillPoint);
 				} catch {}
 				try {
-					attacker.Anim.Play("hit");
+					attackerEffect.Play("cancel", -1, 0);
+					attacker.Anim.Play("hit", -1, 0);
 					attacker.DecreaseHp(defenderSkill.Damage);
 				} catch {}
 				this.CurrentCombo = 0;
@@ -186,12 +193,13 @@ public class BattleManager : MonoBehaviour {
 			case DefendSkill.DefendState.HIT : {
 				// attacker succeeded to hit defender
 				try {
-					if(attackerSkill.IsLongButton && attackData.Type == InputManager.InputType.DOWN) {
-						this.LongButtonTime = time;
-					}
-					else if(attackerSkill.IsLongButton && attackData.Type == InputManager.InputType.UP) {
-						defender.Anim.Play("hit");
+					if(attackerSkill.IsLongButton && attackData.Type == InputManager.InputType.UP) {
+						defender.Anim.Play("hit", -1, 0);
 						float damage = (time - this.LongButtonTime) / 25000.0f;
+						if (damage > 100)
+							defenderEffect.Play("str_full", -1, 0);
+						else
+							defenderEffect.Play("str_nor", -1, 0);
 						damage = System.Math.Min(damage, 100);
 						defender.DecreaseHp(damage);
 					}
@@ -199,7 +207,15 @@ public class BattleManager : MonoBehaviour {
 						// do nothing
 					}
 					else {
-						defender.Anim.Play("hit");
+						if(attackerSkill.Name == "Consecutive" && CurrentCombo == 1)
+							defenderEffect.Play("con1", -1, 0);
+						else if(attackerSkill.Name == "Consecutive" && CurrentCombo == 2)
+							defenderEffect.Play("con2", -1, 0);
+						else if(attackerSkill.Name == "Consecutive" && CurrentCombo == 3)
+							defenderEffect.Play("con3", -1, 0);
+						else if(attackerSkill.Name == "Normal")
+							defenderEffect.Play("kyunje", -1, 0);
+						defender.Anim.Play("hit", -1, 0);
 						defender.DecreaseHp(attackerSkill.Damage[CurrentCombo - 1]);
 					}
 				} catch {}
