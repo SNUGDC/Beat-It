@@ -17,16 +17,17 @@ public class BeatGenerator : MonoBehaviour {
 	private int _StartTime; // Starting time of battle
 
 	void Start() {
-		ReadBeatFromTxt(SongName);
+		ReadBeatFromTxt(GameObject.Find ("GameData").GetComponent<GameData> ().song.name);
 		// generate test data
 		/*for(int i = 1; i <= 100; ++i) {
 			Note newNote = new Note((uint)i, 1000000 * (i + 3), (i % 7) == 0);
 			NoteList.Enqueue(newNote);
 		}*/
 		_StartTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
+		GetComponent<AudioSource>().clip = GameObject.Find ("GameData").GetComponent<GameData>().song.music;
 		GetComponent<AudioSource>().PlayDelayed(NoteMover.NoteDelay);
 	}
-
+	
 	void Update() {
 		// Dequeue & kill last note
 		int curTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);

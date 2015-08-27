@@ -6,13 +6,14 @@ using System.Collections.Generic;
 public class PlayerScript : MonoBehaviour {
 
 	PlayerDB database;
-	Character character;
+	[HideInInspector] public Character character;
 	public int playerID = 0;
 	private int playerIDMax;
 	public int playerType;
 	[HideInInspector] public bool isReady = false;
 
 	public Text readyText;
+	public Text nameText;
 	private Image imageRenderer;
 	
 	public GameObject skillImagePrefab;
@@ -34,7 +35,7 @@ public class PlayerScript : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		readyText.text = (isReady)? "Ready" : "Not Ready";
-
+		nameText.text = "Character" + (playerID + 1).ToString();
 		bool isChanged = false;
 		if ((playerType == 1)? Input.GetKeyDown (KeyCode.A) : Input.GetKeyDown (KeyCode.J)) {
 			playerID = (playerID == 0)? playerIDMax : playerID - 1;
@@ -42,7 +43,7 @@ public class PlayerScript : MonoBehaviour {
 		} else if ((playerType == 1)? Input.GetKeyDown (KeyCode.D) : Input.GetKeyDown (KeyCode.L)) {
 			playerID = (playerID == playerIDMax)? 0 : playerID + 1;
 			isChanged = true;
-		} else if ((playerType == 1)? Input.GetKeyDown (KeyCode.Q) : Input.GetKeyDown(KeyCode.P)) {
+		} else if ((playerType == 1)? Input.GetKeyDown (KeyCode.Q) : Input.GetKeyDown(KeyCode.O)) {
 			isReady = !isReady;
 		}
 		if (isChanged) {

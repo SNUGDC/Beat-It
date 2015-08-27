@@ -7,6 +7,8 @@ public class Skill {
 	public Sprite sprite;
 	public string name;
 	public string description;
+	public uint length;
+	public uint sp;
 }
 
 [System.Serializable]
@@ -33,6 +35,7 @@ public class PlayerDB : MonoBehaviour {
 				character.skills.Add (FindSkillFromName(skillName));
 			}
 		}
+		DontDestroyOnLoad (transform.gameObject);
 	}
 
 	Skill FindSkillFromName(string name)
