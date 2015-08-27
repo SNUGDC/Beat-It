@@ -9,6 +9,7 @@ using SimpleJSON;
 public class BeatGenerator : MonoBehaviour {
 	public const int BEAT_DELAY = 3000000;
 	public const uint BEAT_MARGIN = 500000; // time margin for judge
+	public int BEAT_DELAY_TEMP = 100000000;
 
 	public Transform NotePrefab; // prefab for note
 	public Queue<Note> NoteList = new Queue<Note>(); // List of Notes
@@ -26,13 +27,13 @@ public class BeatGenerator : MonoBehaviour {
 			NoteList.Enqueue(newNote);
 		}*/
 		_StartTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
-        StartCoroutine("StartSong");
+        //StartCoroutine(StartSong ());
 	}
-
-    IEnumerator StartSong() {
+	/*
+    public IEnumerator StartSong() {
         yield return new WaitForSeconds(NoteMover.NoteDelay);
         GameObject.Find("MusicPlayer").GetComponent<AudioSource>().Play();
-    }
+    }*/
 
 	void Update() {
 		// Dequeue & kill last note
@@ -89,7 +90,7 @@ public class BeatGenerator : MonoBehaviour {
                 {
                     case '0':
                         notecount++;
-                        Note newNote = new Note(notecount, Convert.ToInt32(count * beatLen * 1000000) + BEAT_DELAY, false);
+                        Note newNote = new Note(notecount, Convert.ToInt32(count * beatLen * 1000000) + BEAT_DELAY + BEAT_DELAY_TEMP, false);
                         NoteList.Enqueue(newNote);
 						count++;
                         break;

@@ -24,7 +24,7 @@ public class RecordScript : MonoBehaviour {
 	}
 	void Update()
 	{
-		if(Input.GetKeyDown (KeyCode.S) || Input.GetKeyDown (KeyCode.K)) {
+		if(Input.GetKeyDown (KeyCode.S) || Input.GetKeyDown (KeyCode.Semicolon)) {
 			index = (index == indexMax)? 0 : index + 1;
 			animator.SetTrigger ("recordChanged");
 			GetComponent<Image>().sprite = songs[index].sprite;
