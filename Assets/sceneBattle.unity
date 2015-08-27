@@ -751,6 +751,10 @@ Prefab:
       propertyPath: SongName
       value: exp1
       objectReference: {fileID: 0}
+    - target: {fileID: 8264820, guid: b112ed09439e32b49856291c69be8c9f, type: 2}
+      propertyPath: m_PlayOnAwake
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: b112ed09439e32b49856291c69be8c9f, type: 2}
   m_IsPrefabParent: 0
