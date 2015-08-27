@@ -10,6 +10,7 @@ public class Player : MonoBehaviour {
 	private AttackSkill[] AttackSkillList;
 	private DefendSkill[] DefendSkillList;
 	private SpecialSkill[] SpecialSkillList;
+	public int PlayerType; // 1P or 2P?
 
 	void Start() {
 		var gameData = GameObject.Find ("GameData").GetComponent<GameData>();
@@ -20,8 +21,8 @@ public class Player : MonoBehaviour {
 			new DefendSkill(), new DefendSkill(), new DefendSkill()
 		};
 		SpecialSkillList = new SpecialSkill[2] {
-			new SpecialSkill(gameData.characterData[0].character.skills[0]),
-			new SpecialSkill(gameData.characterData[0].character.skills[1])
+			new SpecialSkill(gameData.characterData[PlayerType-1].character.skills[0]),
+			new SpecialSkill(gameData.characterData[PlayerType-1].character.skills[1])
 		};
 		SetSkill("none"); // TODO : remove this
 	}

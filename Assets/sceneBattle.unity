@@ -443,6 +443,7 @@ MonoBehaviour:
   Anim: {fileID: 527818938}
   Hp: {fileID: 1488093866}
   Sp: {fileID: 1637408218}
+  PlayerType: 2
 --- !u!95 &527818938
 Animator:
   serializedVersion: 3
@@ -1685,6 +1686,7 @@ MonoBehaviour:
   Anim: {fileID: 1784539077}
   Hp: {fileID: 574118221}
   Sp: {fileID: 376947754}
+  PlayerType: 1
 --- !u!95 &1784539077
 Animator:
   serializedVersion: 3
