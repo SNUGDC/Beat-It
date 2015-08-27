@@ -7,7 +7,7 @@ public class BattleManager : MonoBehaviour {
 	public const float FLIP_DELAY = 0.6f;
 
 	public Player[] Player;
-	public JudgeDisplayer[] JudgeDisplayer;
+	public Animator[] JudgeAnim;
 	public Queue<Note.Core>[] DataQueue;
 	public Text ComboText;
 
@@ -88,14 +88,20 @@ public class BattleManager : MonoBehaviour {
 		}
 	}
 
+	public void ShowJudge(int playerIndex, uint judge) {
+		if(judge >= 95) JudgeAnim[playerIndex].Play("amazing");
+		else if(95 > judge && judge >= 80) JudgeAnim[playerIndex].Play("cool");
+		else if(80 > judge && judge >= 65) JudgeAnim[playerIndex].Play("great");
+		else if(65 > judge && judge >= 50) JudgeAnim[playerIndex].Play("good");
+	}
+
 	public void DoBattle(uint id, bool flip) {
 		
 		Note.Core Player1Data = GetData(0, id);
 		Note.Core Player2Data = GetData(1, id);
 
-		// set judge text
-		JudgeDisplayer[0].SetJudge(Player1Data.Judge / 10.0f, Player1Data.Button);
-		JudgeDisplayer[1].SetJudge(Player2Data.Judge / 10.0f, Player2Data.Button);
+		if(Player1Data.Judge < 50) JudgeAnim[0].Play("miss");
+		if(Player2Data.Judge < 50) JudgeAnim[1].Play("miss");
 
 		// assign basic variables
 		Player Attacker = (this.AttackerIndex == 0) ? Player[0] : Player[1];

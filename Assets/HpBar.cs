@@ -37,8 +37,8 @@ public class HpBar : MonoBehaviour {
 			_CurVal = Target;
 		}
 		distance = (MoveDir == Direction.RIGHT) ? distance : -distance;
-		GetComponent<RectTransform>().Translate(distance, 0, 0);
-		Content.Translate(-distance, 0, 0);
+		GetComponent<RectTransform>().anchoredPosition += new Vector2(distance, 0);
+		Content.anchoredPosition += new Vector2(-distance, 0);
 	}
 
 	public void Increase(int data) {

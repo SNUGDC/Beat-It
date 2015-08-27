@@ -37,8 +37,8 @@ public class SpBar : MonoBehaviour {
 			_CurVal = Target;
 		}
 		distance = (MoveDir == Direction.LEFT) ? distance : -distance;
-		this.transform.Translate(distance, 0, 0);
-		Content.Translate(-distance, 0, 0);
+		GetComponent<RectTransform>().anchoredPosition += new Vector2(distance, 0);
+		Content.anchoredPosition += new Vector2(-distance, 0);
 	}
 
 	public void Increase(int data) {

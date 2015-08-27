@@ -54,9 +54,10 @@ public class Note{
 		// if timing is good & is valid input, accept
 		else if(judge > 0 && manager.IsValidInput(player, but, type)){
 			manager.GetReady(player, but, type);
+			manager.ShowJudge(player, (uint)(judge * 50) + 50);
 			CoreData[player].Button = but;
 			CoreData[player].Type = type;
-			CoreData[player].Judge = (uint)(judge * 1000);
+			CoreData[player].Judge = (uint)(judge * 50) + 50;
 		}
 	}
 

@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 	public delegate void PlayAnim(Animator target, uint combo, bool isUp);
+
 	public Animator Anim; // Mechanim animator for this player
 	public HpBar Hp; // Hp Text
 	public SpBar Sp; // Sp Text
