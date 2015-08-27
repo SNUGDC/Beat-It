@@ -31,13 +31,13 @@ public class InputManager : MonoBehaviour {
 	private KeyCode ButToKeycode(Note.Button but) {
 		switch(but) {
 			case Note.Button.RED :
-				return (Player == 0) ? KeyCode.A : KeyCode.J;
+				return (Player == 0) ? KeyCode.S : KeyCode.Semicolon;
 			case Note.Button.BLUE :
-				return (Player == 0) ? KeyCode.S : KeyCode.K;
+				return (Player == 0) ? KeyCode.A : KeyCode.L;
 			case Note.Button.GREEN :
-				return (Player == 0) ? KeyCode.D : KeyCode.L;
+				return (Player == 0) ? KeyCode.D : KeyCode.Quote;
 			case Note.Button.SKILL :
-				return (Player == 0) ? KeyCode.Q : KeyCode.U;
+				return (Player == 0) ? KeyCode.Q : KeyCode.O;
 			default :
 				return KeyCode.None;
 		}

@@ -30,7 +30,13 @@ public class BeatGenerator : MonoBehaviour {
 		// Dequeue & kill last note
 		int curTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
 		// find first note in READY State & show at appropriate time
-		Note appearNote = NoteList.First(n => !n.IsValid);
+		Note appearNote = null;
+		foreach(Note n in NoteList) {
+			if(!n.IsValid) {
+				appearNote = n;
+				break;
+			}
+		}
 		if(appearNote != null && curTime - this.StartTime > appearNote.Time - BEAT_DELAY) {
 			appearNote.Appear(NotePrefab);
 		}

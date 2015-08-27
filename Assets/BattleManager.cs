@@ -197,8 +197,8 @@ public class BattleManager : MonoBehaviour {
 				break;
 			}
 			case DefendSkill.DefendState.NONE : {
-				defender.Anim.Play("hit");
-				attacker.Anim.Play("hit");
+				// defender.Anim.Play("hit");
+				// attacker.Anim.Play("hit");
 				break;
 			}
 			default : break;
