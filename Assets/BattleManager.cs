@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class BattleManager : MonoBehaviour {
 	public const float FLIP_DELAY = 0.6f;
 
+	public GameObject[] WinImage;
 	public Player[] Player;
 	public Animator[] JudgeAnim;
 	public Animator[] EffectAnim;
@@ -96,7 +97,7 @@ public class BattleManager : MonoBehaviour {
 		else if(65 > judge && judge >= 50) JudgeAnim[playerIndex].Play("good", -1, 0);
 	}
 
-	public void DoBattle(uint id, bool flip, int time) {
+	public void DoBattle(uint id, int time) {
 		// assign basic variables
 		Player attacker = (this.AttackerIndex == 0) ? Player[0] : Player[1];
 		Player defender = (this.AttackerIndex == 0) ? Player[1] : Player[0];
@@ -119,10 +120,32 @@ public class BattleManager : MonoBehaviour {
 		// post-battle logic
 		this.LastButton = attackData.Button;
 		this.LastType = attackData.Type;
-		if(flip) {
-			if(!CancelFlip) StartCoroutine(FlipAttacker());
-			else CancelFlip = false;
+		if(attacker.Hp.Value <= 0) {
+			GameObject.Find("BeatGenerator").SetActive(false);
+			GameObject.Find("InputManager1").SetActive(false);
+			GameObject.Find("InputManager2").SetActive(false);
+			attacker.Anim.speed = 0.5f;
+			defender.Anim.speed = 0.5f;
+			attacker.Anim.Play("lose");
+			StartCoroutine(EndGame((AttackerIndex == 0) ? 1 : 0));
 		}
+		else if(defender.Hp.Value <= 0) {
+			GameObject.Find("BeatGenerator").SetActive(false);
+			GameObject.Find("InputManager1").SetActive(false);
+			GameObject.Find("InputManager2").SetActive(false);
+			attacker.Anim.speed = 0.5f;
+			defender.Anim.speed = 0.5f;
+			defender.Anim.Play("lose");
+			StartCoroutine(EndGame(AttackerIndex));
+		}
+	}
+
+	private IEnumerator EndGame(int winnerIndex) {
+		yield return new WaitForSeconds(2.5f);
+		Player[winnerIndex].Anim.speed = 1.0f;
+		Player[winnerIndex].Anim.Play("win");
+		yield return new WaitForSeconds(1);
+		WinImage[winnerIndex].SetActive(true);
 	}
 
 	// core battle logic
@@ -241,7 +264,11 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	// flip attacking player
-	private IEnumerator FlipAttacker() {
+	public void FlipAttacker() {
+		if(CancelFlip) {
+			CancelFlip = false;
+			return;
+		}
 		// flip attacker sign & reset combo
 		if(this.AttackerIndex == 0) {
 			this.AttackerIndex = 1;
@@ -260,8 +287,6 @@ public class BattleManager : MonoBehaviour {
 		this.CurrentCombo = 0;
 		this.LastButton = Note.Button.NONE;
 		this.LastType = InputManager.InputType.NONE;
-
-		yield return new WaitForSeconds(FLIP_DELAY);
 
 		// reset all triggers to avoid unwanted animation
 		foreach(AnimatorControllerParameter param

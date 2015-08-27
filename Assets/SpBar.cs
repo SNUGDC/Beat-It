@@ -8,15 +8,15 @@ public class SpBar : MonoBehaviour {
 
 	public RectTransform Content;
 	public Direction MoveDir;
-	public int CurVal {
-		get { return _CurVal; }
+	public int Value {
+		get { return Target; }
 	}
-	private int _CurVal;
+	private int CurVal;
 	private int Target;
 
 	// Use this for initialization
 	void Start () {
-		Target = _CurVal = 0;
+		Target = CurVal = 0;
 	}
 
 	// Update is called once per frame
@@ -24,17 +24,17 @@ public class SpBar : MonoBehaviour {
 		float width = GetComponent<RectTransform>().rect.width;
 		float threshold = SPEED / width * MAX_SP;
 		float distance = 0;
-		if(_CurVal > Target + threshold) { 
+		if(CurVal > Target + threshold) { 
 			distance = SPEED;
-			_CurVal -= (int)threshold;
+			CurVal -= (int)threshold;
 		}
-		else if(_CurVal < Target - threshold) {
+		else if(CurVal < Target - threshold) {
 			distance = -SPEED;
-			_CurVal += (int)threshold;
+			CurVal += (int)threshold;
 		}
 		else {
-			distance = (float)(_CurVal - Target) / MAX_SP * width;
-			_CurVal = Target;
+			distance = (float)(CurVal - Target) / MAX_SP * width;
+			CurVal = Target;
 		}
 		distance = (MoveDir == Direction.LEFT) ? distance : -distance;
 		GetComponent<RectTransform>().anchoredPosition += new Vector2(distance, 0);

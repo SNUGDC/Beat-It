@@ -10,6 +10,7 @@ public class BeatGenerator : MonoBehaviour {
 	public string SongName;
 	public Transform NotePrefab; // prefab for note
 	public Queue<Note> NoteList = new Queue<Note>(); // List of Notes
+	public Queue<int> FlipList = new Queue<int>();
 	public int StartTime {
 		get { return _StartTime; }
 	}
@@ -44,8 +45,12 @@ public class BeatGenerator : MonoBehaviour {
 		}
 		// play sound & kill note
 		Note curNote = NoteList.Peek();
-		if(curNote != null && curTime >= curNote.Time + _StartTime) {
+		if(NoteList.Count != 0 && curTime >= curNote.Time + _StartTime) {
 			NoteList.Dequeue().Kill();
+		}
+		if(FlipList.Count != 0 && curTime >= FlipList.Peek() + _StartTime) {
+			GameObject.Find("BattleManager").GetComponent<BattleManager>().FlipAttacker();
+			FlipList.Dequeue();
 		}
 	}
 
@@ -66,8 +71,7 @@ public class BeatGenerator : MonoBehaviour {
 						notecount++;
 						Note newNote
 							= new Note(notecount,
-									   (int)((count * beatLen + NoteMover.NoteDelay) * 1000000),
-									   false);
+									   (int)((count * beatLen + NoteMover.NoteDelay) * 1000000));
 						NoteList.Enqueue(newNote);
 						count++;
 						break;
@@ -76,7 +80,7 @@ public class BeatGenerator : MonoBehaviour {
 					case ' ':
 						break;
 					case ';':
-						NoteList.Last().Flip = true; 
+						FlipList.Enqueue((int)((count * beatLen + NoteMover.NoteDelay) * 1000000));
 						break;
 				}
 			}

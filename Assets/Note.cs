@@ -13,7 +13,6 @@ public class Note{
 	public int Time; // time of note
 
 	private Core[] CoreData;
-	public bool Flip;
 
 	public InputManager.InputType CurType() { return this.CoreData[0].Type; }
 
@@ -22,7 +21,7 @@ public class Note{
 	}
 
 	// default constructor
-	public Note(uint id, int time, bool flip) {
+	public Note(uint id, int time) {
 		CoreData = new Core[2];
 		IsValid = false;
 		Time = time;
@@ -30,7 +29,6 @@ public class Note{
 		CoreData[0].Button = CoreData[1].Button = Button.NONE;
 		CoreData[0].Type = CoreData[1].Type = InputManager.InputType.NONE;
 		CoreData[0].Judge = CoreData[1].Judge = 0;
-		Flip = flip;
 	}
 
 	// create note on display
@@ -70,6 +68,6 @@ public class Note{
 		manager.DataQueue[0].Enqueue(CoreData[0]);
 		manager.DataQueue[1].Enqueue(CoreData[1]);
 		// call actual battle logic
-		manager.DoBattle(CoreData[0].Id, Flip, Time);
+		manager.DoBattle(CoreData[0].Id, Time);
 	}
 }
