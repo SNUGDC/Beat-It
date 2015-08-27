@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class PlayerScript : MonoBehaviour {
 
 	PlayerDB database;
-	Character character;
+	[HideInInspector] public Character character;
 	public int playerID = 0;
 	private int playerIDMax;
 	public int playerType;
@@ -43,7 +43,7 @@ public class PlayerScript : MonoBehaviour {
 		} else if ((playerType == 1)? Input.GetKeyDown (KeyCode.D) : Input.GetKeyDown (KeyCode.L)) {
 			playerID = (playerID == playerIDMax)? 0 : playerID + 1;
 			isChanged = true;
-		} else if ((playerType == 1)? Input.GetKeyDown (KeyCode.Q) : Input.GetKeyDown(KeyCode.P)) {
+		} else if ((playerType == 1)? Input.GetKeyDown (KeyCode.Q) : Input.GetKeyDown(KeyCode.O)) {
 			isReady = !isReady;
 		}
 		if (isChanged) {

@@ -9,13 +9,19 @@ public class Player : MonoBehaviour {
 	public SpBar Sp; // Sp Text
 	private AttackSkill[] AttackSkillList;
 	private DefendSkill[] DefendSkillList;
+	private SpecialSkill[] SpecialSkillList;
 
 	void Start() {
+		var gameData = GameObject.Find ("GameData").GetComponent<GameData>();
 		AttackSkillList = new AttackSkill[3] {
 			new AttackSkill(), new AttackSkill(), new AttackSkill()
 		};
 		DefendSkillList = new DefendSkill[3] {
 			new DefendSkill(), new DefendSkill(), new DefendSkill()
+		};
+		SpecialSkillList = new SpecialSkill[2] {
+			new SpecialSkill(gameData.characterData[0].character.skills[0]),
+			new SpecialSkill(gameData.characterData[0].character.skills[1])
 		};
 		SetSkill("none"); // TODO : remove this
 	}
@@ -139,7 +145,6 @@ public class Player : MonoBehaviour {
 			case Note.Button.RED	: return this.AttackSkillList[0];
 			case Note.Button.BLUE	: return this.AttackSkillList[1];
 			case Note.Button.GREEN	: return this.AttackSkillList[2];
-			case Note.Button.SKILL	: return this.AttackSkillList[3];
 			default					: return null;
 		}
 	}
@@ -148,9 +153,19 @@ public class Player : MonoBehaviour {
 		switch(but) {
 			case Note.Button.RED	: return this.DefendSkillList[0];
 			case Note.Button.BLUE	: return this.DefendSkillList[1];
-			case Note.Button.GREEN	: return this.DefendSkillList[2];
-			case Note.Button.SKILL	: return this.DefendSkillList[3];
+			case Note.Button.GREEN	: return this.DefendSkillList[2];;
 			default					: return null;
+		}
+	}
+
+	public SpecialSkill GetSpecialSkill(Note.Button but) {
+		switch (but) {
+		case Note.Button.SKILL1:
+			return this.SpecialSkillList [0];
+		case Note.Button.SKILL2:
+			return this.SpecialSkillList [1];
+		default					:
+			return null;
 		}
 	}
 

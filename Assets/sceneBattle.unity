@@ -116,6 +116,7 @@ Transform:
   - {fileID: 1784539075}
   - {fileID: 527818936}
   - {fileID: 1933048967}
+  - {fileID: 820526524}
   - {fileID: 323725257}
   m_Father: {fileID: 0}
   m_RootOrder: 7
@@ -208,7 +209,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 267277847}
-  m_RootOrder: 3
+  m_RootOrder: 4
 --- !u!1 &376476153
 GameObject:
   m_ObjectHideFlags: 0
@@ -557,6 +558,7 @@ GameObject:
   m_Component:
   - 4: {fileID: 713338840}
   - 82: {fileID: 713338839}
+  - 114: {fileID: 713338841}
   m_Layer: 0
   m_Name: MusicPlayer
   m_TagString: Untagged
@@ -573,7 +575,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: c24332669cae3364996f00e26da4a90b, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -645,6 +647,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 8
+--- !u!114 &713338841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 713338838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a28a77d6005e94606a2f077b649a5681, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &820526521
 GameObject:
   m_ObjectHideFlags: 0

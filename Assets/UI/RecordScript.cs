@@ -3,13 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
-[System.Serializable]
-public class Song {
-	public string name;
-	public Sprite sprite;
-	public AudioClip music;
-}
-
 public class RecordScript : MonoBehaviour {
 
 	public int index = 0;
@@ -53,5 +46,11 @@ public class RecordScript : MonoBehaviour {
 	void LateUpdate()
 	{
 		GetComponent<Image>().sprite = songs[index].sprite;
+	}
+
+	public Song GetCurrentSong()
+	{
+		//return new Song {name = songs[index].name, sprite = songs[index].sprite, music = songs[index].music};
+		return songs [index];
 	}
 }
