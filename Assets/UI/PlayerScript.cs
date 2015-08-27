@@ -23,6 +23,7 @@ public class PlayerScript : MonoBehaviour {
 		database = GameObject.Find ("PlayerDatabase").GetComponent<PlayerDB>();
 		playerIDMax = database.characters.Count - 1;
 		UpdateCharacter (playerID);
+		ClearSkillImageObjects ();
 		UpdateSkillImageObjects ();
 		// correction of text scale
 		var scale = readyText.gameObject.transform.localScale;
@@ -31,7 +32,7 @@ public class PlayerScript : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
 		readyText.text = (isReady)? "Ready" : "Not Ready";
 
 		bool isChanged = false;
@@ -69,26 +70,28 @@ public class PlayerScript : MonoBehaviour {
 			script.skillName = skill.name; script.description = skill.description;
 			script.sprite = skill.sprite;
 			script.Setup();
-			GameObject skillPanel = transform.FindChild ("SkillPanel " + playerType.ToString ()).gameObject;
+			GameObject skillPanel = GameObject.Find ("SkillPanel " + playerType.ToString ());
 			go.transform.SetParent(skillPanel.transform);
 			// move skill image to desired position
 			var panelWidth = skillPanel.GetComponent<RectTransform>().rect.width;
-			go.transform.localPosition = (playerType == 1)? new Vector3(panelWidth*0.4f, 0f, 0f) : new Vector3(-panelWidth*0.4f, 0f, 0f);
-			// set scale to normal again (because the scale of the child object inherits the parent)
-			Vector3 scale = go.transform.localScale;
-			scale.x = (playerType == 1) ? -Mathf.Abs (transform.localScale.x) : Mathf.Abs (transform.localScale.x);
-			go.transform.localScale = scale;
+			var panelHeight = skillPanel.GetComponent<RectTransform>().rect.height;
+			go.transform.localPosition = new Vector3(-0.37f * panelWidth, 0.0f, 0.0f);
+			go.transform.localScale = Vector3.one;
+			//go.GetComponent<RectTransform>().sizeDelta = new Vector2 (0.8f*panelHeight, 0.8f*panelHeight);
 			// move skill image position horizontally depending on count
+			//var iconWidth = go.GetComponent<RectTransform>().rect.width;
 			Vector3 pos = go.transform.position;
-			pos.x += 50 * count;
+			pos.x += panelHeight * 1.2f * count * Screen.height/600;
 			go.transform.position = pos;
 			count++;
 		}
 	}
 
+
+
 	void ClearSkillImageObjects()
 	{
-		foreach (Transform childObject in transform.FindChild ("SkillPanel " + playerType.ToString ()))
+		foreach (Transform childObject in GameObject.Find ("SkillPanel " + playerType.ToString ()).transform)
 			Destroy (childObject.gameObject);
 	}
 }

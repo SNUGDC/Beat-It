@@ -13,7 +13,7 @@ public class Note{
 	public int Time; // time of note
 
 	private Core[] CoreData;
-	private bool Flip;
+	public bool Flip;
 
 	public bool IsPressed(int player) {
 		return CoreData[player].Button != Button.NONE;

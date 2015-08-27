@@ -1,4 +1,6 @@
 using UnityEngine;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,16 +18,22 @@ public class BeatGenerator : MonoBehaviour {
 
 	private int _StartTime; // Starting time of battle
 
+	public string songName;
 	void Start() {
-		// ReadBeat("test_data");
+		ReadBeatFromTxt(songName);
 		// generate test data
-		for(int i = 1; i <= 100; ++i) {
+		/*for(int i = 1; i <= 100; ++i) {
 			Note newNote = new Note((uint)i, 1000000 * (i + 3), (i % 7) == 0);
 			NoteList.Enqueue(newNote);
-		}
+		}*/
 		_StartTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
+        StartCoroutine("StartSong");
 	}
 
+    IEnumerator StartSong() {
+        yield return new WaitForSeconds(NoteMover.NoteDelay);
+        GameObject.Find("MusicPlayer").GetComponent<AudioSource>().Play();
+    }
 	void Update() {
 		// Dequeue & kill last note
 		int curTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
@@ -61,4 +69,39 @@ public class BeatGenerator : MonoBehaviour {
 			NoteList.Enqueue(newNote);
 		}
 	}
+
+    private void ReadBeatFromTxt(string fileName)
+    {
+        string noteString = Resources.Load<TextAsset>(fileName).text;
+        string[] lines = noteString.Split('\n');
+
+        int bpm = Int32.Parse(lines[1]);
+        int quantize = Int32.Parse(lines[2]);
+        float beatLen = 60.0f / ((float)bpm) * (4.0f / ((float)quantize));
+
+        uint count = 0;
+        uint notecount = 0;
+        for (int i = 3; i < lines.Length; i++)
+        {
+            foreach (char c in lines[i])
+            {
+                switch (c)
+                {
+                    case '0':
+                        notecount++;
+                        Note newNote = new Note(notecount, Convert.ToInt32(count * beatLen * 1000000) + BEAT_DELAY, false);
+                        NoteList.Enqueue(newNote);
+						count++;
+                        break;
+                    case '-':
+                        count++; break;
+                    case ' ':
+                        break;
+                    case ';':
+                        NoteList.Last().Flip = true; 
+						break;
+                }
+            }
+        }
+    }
 }
