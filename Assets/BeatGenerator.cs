@@ -26,8 +26,6 @@ public class BeatGenerator : MonoBehaviour {
 			NoteList.Enqueue(newNote);
 		}*/
 		_StartTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);
-		GetComponent<AudioSource>().clip = GameObject.Find ("GameData").GetComponent<GameData>().song.music;
-		GetComponent<AudioSource>().PlayDelayed(NoteMover.NoteDelay);
 	}
 
 	void Update() {
@@ -72,7 +70,7 @@ public class BeatGenerator : MonoBehaviour {
 						notecount++;
 						Note newNote
 							= new Note(notecount,
-									   (int)((count * beatLen + NoteMover.NoteDelay) * 1000000));
+									   (int)((count * beatLen + NoteMover.NoteDelay) * 1000000) + BEAT_DELAY_TEMP);
 						NoteList.Enqueue(newNote);
 						count++;
 						break;
