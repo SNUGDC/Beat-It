@@ -17,7 +17,7 @@ public class BattleManager : MonoBehaviour {
 	private InputManager.InputType LastType;
 	private int LongButtonTime;
 	private uint CurrentCombo;
-	private int AttackerIndex;
+	[HideInInspector] public int AttackerIndex;
 	private bool CancelFlip;
 
 	void Start () {
@@ -30,6 +30,12 @@ public class BattleManager : MonoBehaviour {
 		Player[0].GetComponent<SpriteRenderer>().material.color = Color.red;
 		Player[1].GetComponent<SpriteRenderer>().material.color = Color.white;
 		DataQueue = new Queue<Note.Core>[2] { new Queue<Note.Core>(), new Queue<Note.Core>() };
+	}
+
+	public void FlippAttackerOnStart() {
+		AttackerIndex = 1;
+		Player [0].GetComponent<SpriteRenderer> ().material.color = Color.white;
+		Player [1].GetComponent<SpriteRenderer> ().material.color = Color.red;
 	}
 
 	void Update () {

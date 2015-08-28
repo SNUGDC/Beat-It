@@ -6,6 +6,7 @@ using System.Linq;
 
 public class BeatGenerator : MonoBehaviour {
 	public const uint BEAT_MARGIN = 500000; // time margin for judge
+	public int BEAT_DELAY_TEMP = 100000000;
 
 	public string SongName;
 	public Transform NotePrefab; // prefab for note
@@ -28,7 +29,7 @@ public class BeatGenerator : MonoBehaviour {
 		GetComponent<AudioSource>().clip = GameObject.Find ("GameData").GetComponent<GameData>().song.music;
 		GetComponent<AudioSource>().PlayDelayed(NoteMover.NoteDelay);
 	}
-	
+
 	void Update() {
 		// Dequeue & kill last note
 		int curTime = (int)System.Math.Round(Time.timeSinceLevelLoad * 1000000);

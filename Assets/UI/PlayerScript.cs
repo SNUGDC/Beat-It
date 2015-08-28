@@ -37,10 +37,10 @@ public class PlayerScript : MonoBehaviour {
 		readyText.text = (isReady)? "Ready" : "Not Ready";
 		nameText.text = "Character" + (playerID + 1).ToString();
 		bool isChanged = false;
-		if ((playerType == 1)? Input.GetKeyDown (KeyCode.A) : Input.GetKeyDown (KeyCode.J)) {
+		if ((playerType == 1)? Input.GetKeyDown (KeyCode.A) : Input.GetKeyDown (KeyCode.L)) {
 			playerID = (playerID == 0)? playerIDMax : playerID - 1;
 			isChanged = true;
-		} else if ((playerType == 1)? Input.GetKeyDown (KeyCode.D) : Input.GetKeyDown (KeyCode.L)) {
+		} else if ((playerType == 1)? Input.GetKeyDown (KeyCode.D) : Input.GetKeyDown (KeyCode.Quote)) {
 			playerID = (playerID == playerIDMax)? 0 : playerID + 1;
 			isChanged = true;
 		} else if ((playerType == 1)? Input.GetKeyDown (KeyCode.Q) : Input.GetKeyDown(KeyCode.O)) {
