@@ -32,7 +32,7 @@ public class BattleManager : MonoBehaviour {
 		DataQueue = new Queue<Note.Core>[2] { new Queue<Note.Core>(), new Queue<Note.Core>() };
 	}
 
-	public void FlippAttackerOnStart() {
+	public void FlipAttackerOnStart() {
 		AttackerIndex = 1;
 		Player [0].GetComponent<SpriteRenderer> ().material.color = Color.white;
 		Player [1].GetComponent<SpriteRenderer> ().material.color = Color.red;

@@ -10,8 +10,9 @@ public class BeatGenerator : MonoBehaviour {
 
 	public string SongName;
 	public Transform NotePrefab; // prefab for note
+	public Transform LinePrefab;
 	public Queue<Note> NoteList = new Queue<Note>(); // List of Notes
-	public Queue<int> FlipList = new Queue<int>();
+	public Queue<Turnline> FlipList = new Queue<Turnline>();
 	public int StartTime {
 		get { return _StartTime; }
 	}
@@ -39,15 +40,25 @@ public class BeatGenerator : MonoBehaviour {
 				break;
 			}
 		}
+		
+		Turnline appearLine = null;
+		foreach(Turnline l in FlipList) {
+			if(!l.IsValid) {
+				appearLine = l;
+				break;
+			}
+		}
 		if(appearNote != null && curTime - _StartTime > appearNote.Time - NoteMover.NoteDelay * 1000000) {
 			appearNote.Appear(NotePrefab);
 		}
+		if(appearLine != null && curTime - _StartTime > appearLine.Time - TurnlineMover.NoteDelay * 1000000) {
+			appearLine.Appear(LinePrefab);
+		}
 		// play sound & kill note
-		Note curNote = NoteList.Peek();
-		if(NoteList.Count != 0 && curTime >= curNote.Time + _StartTime) {
+		if(NoteList.Count != 0 && curTime >= NoteList.Peek().Time + _StartTime) {
 			NoteList.Dequeue().Kill();
 		}
-		if(FlipList.Count != 0 && curTime >= FlipList.Peek() + _StartTime) {
+		if(FlipList.Count != 0 && curTime >= FlipList.Peek().Time + _StartTime) {
 			GameObject.Find("BattleManager").GetComponent<BattleManager>().FlipAttacker();
 			FlipList.Dequeue();
 		}
@@ -79,7 +90,8 @@ public class BeatGenerator : MonoBehaviour {
 					case ' ':
 						break;
 					case ';':
-						FlipList.Enqueue((int)((count * beatLen + NoteMover.NoteDelay) * 1000000));
+						Turnline newTurnline = new Turnline((int)(((count+1) * beatLen + NoteMover.NoteDelay) * 1000000) + BEAT_DELAY_TEMP);
+						FlipList.Enqueue(newTurnline);
 						break;
 				}
 			}

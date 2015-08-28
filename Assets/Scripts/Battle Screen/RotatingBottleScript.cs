@@ -9,6 +9,7 @@ public class RotatingBottleScript : MonoBehaviour {
 	private float deceleration = 1000.0f;
 
 	private bool stopping = false;
+	private bool toFlip = false;
 	void Start() {
 		StartCoroutine (StartStopping ());
 	}
@@ -19,15 +20,22 @@ public class RotatingBottleScript : MonoBehaviour {
 			if (speed < 0) {
 				// change attack/defend depending on bottle position
 				var battleManager = GameObject.Find ("BattleManager").GetComponent<BattleManager>();
-				if ((transform.rotation.z % 360.0f) < 180.0f) {
-					battleManager.FlippAttackerOnStart();
+				var beatGenerator = GameObject.Find ("BeatGenerator").GetComponent<BeatGenerator>();
+				Debug.Log(transform.eulerAngles.z);
+				if (transform.eulerAngles.z > 180.0f) {
+					GameObject.Find("BattleManager").GetComponent<BattleManager>().FlipAttacker();
 				}
 				// prepare the notes
-				var beatGenerator = GameObject.Find ("BeatGenerator").GetComponent<BeatGenerator>();
 				foreach(Note note in beatGenerator.NoteList) {
 					note.Time += Mathf.RoundToInt(timeSinceLoad*1000000);
-					note.Time -= beatGenerator.BEAT_DELAY_TEMP - (int)NoteMover.NoteDelay * 1000000;
+					note.Time -= beatGenerator.BEAT_DELAY_TEMP; //- (int)NoteMover.NoteDelay * 1000000;
 				}
+				
+				foreach(Turnline turnline in beatGenerator.FlipList) {
+					turnline.Time += Mathf.RoundToInt(timeSinceLoad*1000000);
+					turnline.Time -= beatGenerator.BEAT_DELAY_TEMP; //- (int)TurnlineMover.NoteDelay * 1000000;
+				}
+
 				// initiate countdown
 				GameObject.Find ("CountdownText").GetComponent<CountdownScript>().startCountdown = true;
 				stopping = false;
@@ -40,7 +48,7 @@ public class RotatingBottleScript : MonoBehaviour {
 
 	IEnumerator StartStopping()
 	{
-		yield return new WaitForSeconds(Random.Range (0.0f, 7.0f * 360.0f / speed));
+		yield return new WaitForSeconds(Random.Range (0.0f, 10.0f * 360.0f / speed));
 		stopping = true;
 	}
 
