@@ -87,6 +87,67 @@ NavMeshSettings:
     cellSize: .166666672
     manualCellSize: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &11983405
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 224: {fileID: 11983406}
+  - 222: {fileID: 11983408}
+  - 114: {fileID: 11983407}
+  m_Layer: 5
+  m_Name: Pin
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &11983406
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 11983405}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1331342017}
+  m_RootOrder: 7
+  m_AnchorMin: {x: .5, y: .5}
+  m_AnchorMax: {x: .5, y: .5}
+  m_AnchoredPosition: {x: 32, y: 29.9389992}
+  m_SizeDelta: {x: 425, y: 449}
+  m_Pivot: {x: .5, y: .5}
+--- !u!114 &11983407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 11983405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f5f67c52d1564df4a8936ccd202a3bd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 4e2d5a7c76f4e4ebc96ae1aaf75d24aa, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+--- !u!222 &11983408
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 11983405}
 --- !u!1 &101700941
 GameObject:
   m_ObjectHideFlags: 0
@@ -895,6 +956,7 @@ RectTransform:
   - {fileID: 2039132626}
   - {fileID: 571951349}
   - {fileID: 101700942}
+  - {fileID: 11983406}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_AnchorMin: {x: 0, y: 0}
@@ -1290,8 +1352,8 @@ GameObject:
   - 222: {fileID: 2039132629}
   - 114: {fileID: 2039132628}
   - 114: {fileID: 2039132627}
-  - 95: {fileID: 2039132630}
   - 82: {fileID: 2039132631}
+  - 95: {fileID: 2039132630}
   m_Layer: 5
   m_Name: Record
   m_TagString: Untagged
@@ -1314,8 +1376,8 @@ RectTransform:
   m_RootOrder: 4
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
-  m_AnchoredPosition: {x: 4, y: -23.6399994}
-  m_SizeDelta: {x: 201, y: 201}
+  m_AnchoredPosition: {x: 3, y: -21}
+  m_SizeDelta: {x: 215, y: 213}
   m_Pivot: {x: .5, y: .5}
 --- !u!114 &2039132627
 MonoBehaviour:
@@ -1331,13 +1393,13 @@ MonoBehaviour:
   index: 0
   songs:
   - name: exp1
-    sprite: {fileID: 21300000, guid: e9ccf7f75a8cd9e4bb8c784b8a1dc0e8, type: 3}
+    sprite: {fileID: 21300000, guid: 0000225cc13a14466ae30d3097f3a25e, type: 3}
     music: {fileID: 8300000, guid: c24332669cae3364996f00e26da4a90b, type: 3}
   - name: exp2
-    sprite: {fileID: 21300000, guid: 73cb6d38f5e58f549b98eb68a12dbf46, type: 3}
+    sprite: {fileID: 21300000, guid: c6af28a21cb90477f96146d1728523ef, type: 3}
     music: {fileID: 8300000, guid: 065cae3fd7527734a8a8ba90f980ffca, type: 3}
   - name: exp9
-    sprite: {fileID: 21300000, guid: dc600e92fba0dad4db85b6f1fb672981, type: 3}
+    sprite: {fileID: 21300000, guid: 036423c7da82147e585448c19ee455d1, type: 3}
     music: {fileID: 8300000, guid: e99918eee2a51444ebaccb0401e4dffd, type: 3}
   songText: {fileID: 1419992531}
   audio: {fileID: 0}
@@ -1354,9 +1416,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Sprite: {fileID: 21300000, guid: e9ccf7f75a8cd9e4bb8c784b8a1dc0e8, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0000225cc13a14466ae30d3097f3a25e, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -1377,7 +1439,7 @@ Animator:
   m_GameObject: {fileID: 2039132625}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6379e1fc7c417ba439bb268f9a2f57e9, type: 2}
+  m_Controller: {fileID: 9100000, guid: ec7aab63a4155408db0900a175a5818a, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

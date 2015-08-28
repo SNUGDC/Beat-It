@@ -4,7 +4,7 @@ using System.Collections;
 public class HpBar : MonoBehaviour {
 	public enum Direction {LEFT, RIGHT};
 	public const float SPEED = 14;
-	public const int MAX_HP = 300;
+	public const int MAX_HP = 3000;
 
 	public RectTransform Content;
 	public Direction MoveDir;

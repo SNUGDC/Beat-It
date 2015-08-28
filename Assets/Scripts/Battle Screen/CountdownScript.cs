@@ -13,18 +13,19 @@ public class CountdownScript : MonoBehaviour {
 
 	void Start() {
 		countdownText = GetComponent<Text> ();
+		countdownText.text = "";
 	}
 	void Update() {
 		if (startCountdown) {
+			countdownText.text = (Mathf.Ceil (time)).ToString();
 			time -= Time.deltaTime;
 			if (time < 0) {
 				// start the whole game
-				//GameObject.Find ("MusicPlayer").GetComponent<AudioSource>().PlayDelayed(NoteMover.NoteDelay);
-				GameObject.Find ("MusicPlayer").GetComponent<AudioSource>().Play ();
+				GameObject.Find ("MusicPlayer").GetComponent<AudioSource>().PlayDelayed(NoteMover.NoteDelay);
 				startCountdown = false;
 				Destroy (gameObject);
 			}
 		}
-		countdownText.text = (Mathf.Ceil (time)).ToString();
+
 	}
 }

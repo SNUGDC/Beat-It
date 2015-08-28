@@ -28,19 +28,16 @@ public class RotatingBottleScript : MonoBehaviour {
 				// prepare the notes
 				foreach(Note note in beatGenerator.NoteList) {
 					note.Time += Mathf.RoundToInt(timeSinceLoad*1000000);
-					note.Time -= beatGenerator.BEAT_DELAY_TEMP; //- (int)NoteMover.NoteDelay * 1000000;
+					note.Time -= beatGenerator.BEAT_DELAY_TEMP - (int)NoteMover.NoteDelay * 1000000 - 1000000;
 				}
 				
 				foreach(Turnline turnline in beatGenerator.FlipList) {
 					turnline.Time += Mathf.RoundToInt(timeSinceLoad*1000000);
-					turnline.Time -= beatGenerator.BEAT_DELAY_TEMP; //- (int)TurnlineMover.NoteDelay * 1000000;
+					turnline.Time -= beatGenerator.BEAT_DELAY_TEMP - (int)TurnlineMover.NoteDelay * 1000000 + 200000 - 1000000;
 				}
-
-				// initiate countdown
-				GameObject.Find ("CountdownText").GetComponent<CountdownScript>().startCountdown = true;
 				stopping = false;
 				speed = 0;
-				Destroy(gameObject);
+				StartCoroutine(DestroyThis ());
 			}
 		}
 		transform.Rotate (new Vector3 (0f, 0f, speed * Time.deltaTime));
@@ -50,6 +47,12 @@ public class RotatingBottleScript : MonoBehaviour {
 	{
 		yield return new WaitForSeconds(Random.Range (0.0f, 10.0f * 360.0f / speed));
 		stopping = true;
+	}
+
+	IEnumerator DestroyThis(){
+		yield return new WaitForSeconds(1.0f);
+		GameObject.Find ("CountdownText").GetComponent<CountdownScript> ().startCountdown = true;
+		Destroy (gameObject);
 	}
 
 }
