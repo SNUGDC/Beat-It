@@ -130,12 +130,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3e63af239472654b92cd6ee78874f22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WinImage: []
   Player:
   - {fileID: 1784539076}
   - {fileID: 527818937}
   JudgeAnim:
   - {fileID: 1933048968}
   - {fileID: 323725255}
+  EffectAnim: []
   ComboText: {fileID: 1760593543}
   AttackerIndex: 0
 --- !u!1 &323725254
@@ -726,8 +728,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46d0a9527082342efa44f9673a3f2e8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
-  deceleration: 1
 --- !u!114 &631281264
 MonoBehaviour:
   m_ObjectHideFlags: 0

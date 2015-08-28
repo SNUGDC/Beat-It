@@ -8,15 +8,15 @@ public class HpBar : MonoBehaviour {
 
 	public RectTransform Content;
 	public Direction MoveDir;
-	public int CurVal {
-		get { return (int)_CurVal; }
+	public int Value {
+		get { return (int)Target; }
 	}
-	private float _CurVal;
+	private float CurVal;
 	private float Target;
 
 	// Use this for initialization
 	void Start () {
-		Target = _CurVal = MAX_HP;
+		Target = CurVal = MAX_HP;
 	}
 
 	// Update is called once per frame
@@ -24,17 +24,17 @@ public class HpBar : MonoBehaviour {
 		float width = GetComponent<RectTransform>().rect.width;
 		float threshold = SPEED / width * MAX_HP;
 		float distance = 0;
-		if(_CurVal > Target + threshold) { 
+		if(CurVal > Target + threshold) { 
 			distance = SPEED;
-			_CurVal -= threshold;
+			CurVal -= threshold;
 		}
-		else if(_CurVal < Target - threshold) {
+		else if(CurVal < Target - threshold) {
 			distance = -SPEED;
-			_CurVal += threshold;
+			CurVal += threshold;
 		}
 		else {
-			distance = (_CurVal - Target) / MAX_HP * width;
-			_CurVal = Target;
+			distance = (CurVal - Target) / MAX_HP * width;
+			CurVal = Target;
 		}
 		distance = (MoveDir == Direction.RIGHT) ? distance : -distance;
 		GetComponent<RectTransform>().anchoredPosition += new Vector2(distance, 0);
