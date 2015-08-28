@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class Skill {
 	public Sprite sprite;
 	public string name;
+	public string koreanName;
 	public string description;
 	public uint length;
 	public uint sp;

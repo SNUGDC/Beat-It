@@ -116,10 +116,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1331342017}
   m_RootOrder: 7
-  m_AnchorMin: {x: .5, y: .5}
-  m_AnchorMax: {x: .5, y: .5}
-  m_AnchoredPosition: {x: 32, y: 29.9389992}
-  m_SizeDelta: {x: 425, y: 449}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 84, y: 35}
+  m_SizeDelta: {x: -725, y: -311}
   m_Pivot: {x: .5, y: .5}
 --- !u!114 &11983407
 MonoBehaviour:
@@ -134,7 +134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Sprite: {fileID: 21300000, guid: 4e2d5a7c76f4e4ebc96ae1aaf75d24aa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 14527534975894813840ec95bd8007ac, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -860,10 +860,6 @@ Prefab:
       propertyPath: m_Pivot.y
       value: .5
       objectReference: {fileID: 0}
-    - target: {fileID: 11459762, guid: 455f17512296f48c6ade529a8697bfb5, type: 2}
-      propertyPath: m_PreserveAspect
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 455f17512296f48c6ade529a8697bfb5, type: 2}
   m_IsPrefabParent: 0
@@ -992,38 +988,43 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skills:
-  - sprite: {fileID: 21300000, guid: f196071b7e0024d1591a084ef78b3b7a, type: 3}
+  - sprite: {fileID: 21300000, guid: 516b433f6a84f4c23981564a5f0de2a5, type: 3}
     name: vita500
-    description: "\uC2EC\uD310\uC744 \uB9E4\uC218\uD55C\uB2E4."
+    koreanName: "\uBE44\uD0C0500"
+    description: "\uB2F9\uC2E0\uC740 \uC624\uB298 \uD558\uB8E8\\nAmazing \uD569\uB2C8\uB2E4."
+    length: 10
+    sp: 2000
+  - sprite: {fileID: 21300000, guid: 8e1331b2dbb5a43b9a89bf09bb38f243, type: 3}
+    name: consume
+    koreanName: "\uAD00\uAC1D\uD761\uC218"
+    description: "\uC18C\uC911\uD788 \uB2F9\uC2E0\uC758 \uBAB8,\\n\uAD00\uAC1D\uC73C\uB85C
+      \uC9C0\uD0A4\uC138\uC694!"
     length: 10
     sp: 1000
-  - sprite: {fileID: 21300000, guid: f196071b7e0024d1591a084ef78b3b7a, type: 3}
-    name: sprite_shower
-    description: "\uC801\uC5D0\uAC8C \uC2A4\uD504\uB77C\uC774\uD2B8 \uC0E4\uC6CC\uB97C..."
+  - sprite: {fileID: 21300000, guid: 7503ba56c2ebf405b929a9a3380a5f4a, type: 3}
+    name: diss
+    koreanName: "\uB514\uC2A4"
+    description: "\uB9C8\uC74C\uC774 \uC544\uD515\uB2C8\uB2E4."
     length: 10
     sp: 1000
-  - sprite: {fileID: 21300000, guid: f196071b7e0024d1591a084ef78b3b7a, type: 3}
-    name: audience_shield
-    description: "\uAD00\uAC1D\uC744 \uBC29\uD328\uB85C \uC0AC\uC6A9\uD558\uC790"
+  - sprite: {fileID: 21300000, guid: f331175280377464b842e57f2050261e, type: 3}
+    name: reflect
+    koreanName: "\uBC18\uC0AC"
+    description: "\uC544 \uBAB0\uB791 \uBB34\uC9C0\uAC1C \uBC18\uC0AC!"
     length: 10
-    sp: 1000
-  - sprite: {fileID: 21300000, guid: f196071b7e0024d1591a084ef78b3b7a, type: 3}
-    name: alcohol_attack
-    description: "\uC220\uB85C \uC0C1\uB300\uBC29\uC758 \uC9D1\uC911\uB825\uC744 \uD750\uD2B8\uB9B0\uB2E4."
-    length: 10
-    sp: 1000
+    sp: 2000
   characters:
   - sprite: {fileID: 21300000, guid: 85a14bdaafd824a21a627d227ceb8045, type: 3}
     name: Character 1
     skillNames:
     - vita500
-    - sprite_shower
+    - consume
     skills: []
   - sprite: {fileID: 21300000, guid: 8c6401fab5de84f0fa208ba992fe671c, type: 3}
     name: Character 2
     skillNames:
-    - audience_shield
-    - alcohol_attack
+    - diss
+    - reflect
     skills: []
 --- !u!4 &1392887552
 Transform:
@@ -1264,6 +1265,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   song:
     name: 
+    externalName: 
     sprite: {fileID: 0}
     music: {fileID: 0}
   char1: {fileID: 469128274}
@@ -1393,12 +1395,15 @@ MonoBehaviour:
   index: 0
   songs:
   - name: exp1
+    externalName: Song 1
     sprite: {fileID: 21300000, guid: 0000225cc13a14466ae30d3097f3a25e, type: 3}
     music: {fileID: 8300000, guid: c24332669cae3364996f00e26da4a90b, type: 3}
   - name: exp2
+    externalName: Song 2
     sprite: {fileID: 21300000, guid: c6af28a21cb90477f96146d1728523ef, type: 3}
     music: {fileID: 8300000, guid: 065cae3fd7527734a8a8ba90f980ffca, type: 3}
   - name: exp9
+    externalName: Song 3
     sprite: {fileID: 21300000, guid: 036423c7da82147e585448c19ee455d1, type: 3}
     music: {fileID: 8300000, guid: e99918eee2a51444ebaccb0401e4dffd, type: 3}
   songText: {fileID: 1419992531}

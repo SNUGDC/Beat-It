@@ -17,7 +17,7 @@ public class RecordScript : MonoBehaviour {
 		animator = GetComponent<Animator>();
 		indexMax = songs.Count - 1;
 		GetComponent<Image>().sprite = songs[index].sprite;
-		songText.text = songs[index].name;
+		songText.text = songs[index].externalName;
 		audio = GetComponent<AudioSource> ();
 		audio.clip = songs [index].music;
 		audio.Play ();
@@ -28,7 +28,7 @@ public class RecordScript : MonoBehaviour {
 			index = (index == indexMax)? 0 : index + 1;
 			animator.SetTrigger ("recordChanged");
 			GetComponent<Image>().sprite = songs[index].sprite;
-			songText.text = songs[index].name;
+			songText.text = songs[index].externalName;
 			audio.clip = songs[index].music;
 			audio.Play ();
 		}

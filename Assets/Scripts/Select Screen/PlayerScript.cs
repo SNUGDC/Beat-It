@@ -68,7 +68,7 @@ public class PlayerScript : MonoBehaviour {
 		foreach(Skill skill in character.skills) {
 			GameObject go = Instantiate (skillImagePrefab) as GameObject;
 			SkillImageScript script = go.GetComponent<SkillImageScript>();
-			script.skillName = skill.name; script.description = skill.description;
+			script.skillName = skill.name; script.koreanSkillName = skill.koreanName; script.description = skill.description;
 			script.sprite = skill.sprite;
 			script.Setup();
 			GameObject skillPanel = GameObject.Find ("SkillPanel " + playerType.ToString ());

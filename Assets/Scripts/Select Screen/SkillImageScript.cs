@@ -5,6 +5,7 @@ using System.Collections;
 
 public class SkillImageScript : MonoBehaviour {
 	[HideInInspector] public string skillName;
+	[HideInInspector] public string koreanSkillName;
 	[HideInInspector] public string description;
 	[HideInInspector] public Sprite sprite;
 
@@ -26,7 +27,7 @@ public class SkillImageScript : MonoBehaviour {
 		textRenderer = GetComponentInChildren<Text> ();
 		textLabel = transform.FindChild ("SkillTextPanel").gameObject;
 		imageRenderer.sprite = sprite;
-		textRenderer.text = skillName + "\n" + description;
+		textRenderer.text = koreanSkillName + "\n" + description.Replace ("\\n","\n");
 		Color color = textRenderer.color;
 		color.a = 0.0f;
 		textRenderer.color = color;
