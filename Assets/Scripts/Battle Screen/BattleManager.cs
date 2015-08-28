@@ -110,8 +110,8 @@ public class BattleManager : MonoBehaviour {
 		Note.Core attackData = (this.AttackerIndex == 0) ? GetData(0, id) : GetData(1, id);
 		Note.Core defendData = (this.AttackerIndex == 0) ? GetData(1, id) : GetData(0, id);
 		// show miss layer
-		if(attackData.Judge < 50) JudgeAnim[0].Play("miss", -1, 0);
-		if(defendData.Judge < 50) JudgeAnim[1].Play("miss", -1, 0);
+		if(attackData.Judge < 50) JudgeAnim[AttackerIndex].Play("miss", -1, 0);
+		if(defendData.Judge < 50) JudgeAnim[(AttackerIndex == 0) ? 1 : 0].Play("miss", -1, 0);
 		// calculate combo
 		CurrentCombo = GetNextCombo(
 			attackData.Button,
