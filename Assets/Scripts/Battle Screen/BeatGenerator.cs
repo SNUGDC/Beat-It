@@ -90,7 +90,8 @@ public class BeatGenerator : MonoBehaviour {
 					case ' ':
 						break;
 					case ';':
-						Turnline newTurnline = new Turnline((int)(((count+1) * beatLen + NoteMover.NoteDelay) * 1000000) + BEAT_DELAY_TEMP);
+						Turnline newTurnline = new Turnline(
+						(int)((count * beatLen + NoteMover.NoteDelay) * 1000000) + BEAT_DELAY_TEMP);
 						FlipList.Enqueue(newTurnline);
 						break;
 				}
