@@ -152,6 +152,9 @@ public class BattleManager : MonoBehaviour {
 		Player[winnerIndex].Anim.Play("win");
 		yield return new WaitForSeconds(1);
 		WinImage[winnerIndex].SetActive(true);
+		yield return new WaitForSeconds(3.5f);
+		Object.Destroy(GameObject.Find("GameData"));
+		Application.LoadLevel("sceneSelect");
 	}
 
 	// core battle logic

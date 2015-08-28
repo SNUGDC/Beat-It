@@ -26,7 +26,7 @@ public class RotatingBottleScript : MonoBehaviour {
 				var beatGenerator = GameObject.Find ("BeatGenerator").GetComponent<BeatGenerator>();
 				foreach(Note note in beatGenerator.NoteList) {
 					note.Time += Mathf.RoundToInt(timeSinceLoad*1000000);
-					note.Time -= beatGenerator.BEAT_DELAY_TEMP;
+					note.Time -= beatGenerator.BEAT_DELAY_TEMP - (int)NoteMover.NoteDelay * 1000000;
 				}
 				// initiate countdown
 				GameObject.Find ("CountdownText").GetComponent<CountdownScript>().startCountdown = true;

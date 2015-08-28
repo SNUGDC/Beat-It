@@ -19,7 +19,7 @@ public class CountdownScript : MonoBehaviour {
 			time -= Time.deltaTime;
 			if (time < 0) {
 				// start the whole game
-				GameObject.Find ("MusicPlayer").GetComponent<AudioSource>().Play();
+				GameObject.Find ("MusicPlayer").GetComponent<AudioSource>().PlayDelayed(NoteMover.NoteDelay);
 				startCountdown = false;
 				Destroy (gameObject);
 			}
