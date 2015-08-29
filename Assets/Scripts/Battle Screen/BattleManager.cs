@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 public class BattleManager : MonoBehaviour {
 	public const float FLIP_DELAY = 0.6f;
+	public const float MAX_STRONG = 3.5f;
 
 	public GameObject[] WinImage;
 	public Player[] Player;
@@ -53,6 +54,7 @@ public class BattleManager : MonoBehaviour {
 	}
 
 	public bool IsValidInput(int playerIndex, Note.Button but, InputManager.InputType type) {
+		if(but == Note.Button.SKILL && type == InputManager.InputType.DOWN) return true;
 		Player targetPlayer = Player[playerIndex];
 		if(playerIndex == AttackerIndex) {
 			AttackSkill skill = targetPlayer.GetAttackSkill(but);
@@ -77,21 +79,33 @@ public class BattleManager : MonoBehaviour {
 		}
 	}
 
-	public void GetReady(int playerIndex, Note.Button but, InputManager.InputType type) {
+	public void GetReady(int playerIndex, Note.Button but, InputManager.InputType type, int time) {
 		Player targetPlayer = Player[playerIndex];
 		if(playerIndex == AttackerIndex) {
-			AttackSkill skill = targetPlayer.GetAttackSkill(but);
-			uint combo = this.GetNextCombo(but, type, skill);
-			// skill is not long button -> ignore long button input
-			targetPlayer.Anim.ResetTrigger("action");
-			skill.PlayAnim(targetPlayer.Anim, combo, type == InputManager.InputType.UP);
+			if(but == Note.Button.SKILL) {
+				targetPlayer.Anim.ResetTrigger("action");
+				targetPlayer.Anim.Play(targetPlayer.GetSpecialSkill().Name + "_ready");
+			}
+			else{
+				AttackSkill skill = targetPlayer.GetAttackSkill(but);
+				uint combo = this.GetNextCombo(but, type, skill, time);
+				// skill is not long button -> ignore long button input
+				targetPlayer.Anim.ResetTrigger("action");
+				skill.PlayAnim(targetPlayer.Anim, combo, type == InputManager.InputType.UP);
+			}
 		}
 		else {
-			DefendSkill skill = targetPlayer.GetDefendSkill(but);
-			targetPlayer.Anim.ResetTrigger("action");
-			skill.PlayAnim(targetPlayer.Anim, 1, false);
-			if(skill.Name == "Guard") {
-				EffectAnim[playerIndex].Play("guardmake", -1, 0);
+			if(but == Note.Button.SKILL) {
+				targetPlayer.Anim.ResetTrigger("action");
+				targetPlayer.Anim.Play(targetPlayer.GetSpecialSkill().Name + "_ready");
+			}
+			else {
+				DefendSkill skill = targetPlayer.GetDefendSkill(but);
+				targetPlayer.Anim.ResetTrigger("action");
+				skill.PlayAnim(targetPlayer.Anim, 1, false);
+				if(skill.Name == "Guard") {
+					EffectAnim[playerIndex].Play("guardmake", -1, 0);
+				}
 			}
 		}
 	}
@@ -116,7 +130,8 @@ public class BattleManager : MonoBehaviour {
 		CurrentCombo = GetNextCombo(
 			attackData.Button,
 			attackData.Type,
-			attacker.GetAttackSkill(attackData.Button)
+			attacker.GetAttackSkill(attackData.Button),
+			time
 		);
 		ComboText.text = CurrentCombo.ToString() + " Combo";
 
@@ -168,6 +183,121 @@ public class BattleManager : MonoBehaviour {
 		// if both player didn't press button, set result to NONE
 		if(defendData.Button == Note.Button.NONE && attackData.Button == Note.Button.NONE)
 			defendResult = DefendSkill.DefendState.NONE;
+		else if(attackData.Button == Note.Button.GREEN && defendData.Button == Note.Button.GREEN) {
+			attacker.Anim.SetTrigger("action");
+			defender.Anim.SetTrigger("action");
+			defendResult = DefendSkill.DefendState.SKILL;
+			switch(attacker.GetSpecialSkill().Name) {
+				case "consume" : {
+					if(attacker.Sp.Value > 1000) {
+						attacker.DecreaseHp(-100);
+						attacker.IncreaseSp(-1000);
+					}
+					break;
+				}
+				case "reflect" : {
+					break;
+				}
+				case "diss" : {
+					if(attacker.Sp.Value > 1000) {
+						defender.DecreaseHp(100);
+						attacker.IncreaseSp(-1000);
+						defender.Anim.Play("hit");
+					}
+					break;
+				}
+				case "vita500" : {
+					break;
+				}
+			}
+			switch(defender.GetSpecialSkill().Name) {
+				case "consume" : {
+					if(defender.Sp.Value > 1000) {
+						defender.DecreaseHp(-100);
+						defender.IncreaseSp(-1000);
+					}
+					break;
+				}
+				case "reflect" : {
+					break;
+				}
+				case "diss" : {
+					if(defender.Sp.Value > 1000) {
+						attacker.DecreaseHp(100);
+						defender.IncreaseSp(-1000);
+						attacker.Anim.Play("hit");
+					}
+					break;
+				}
+				case "vita500" : {
+					break;
+				}
+			}
+		}
+		else if(attackData.Button == Note.Button.SKILL) {
+			if(defendData.Button == Note.Button.GREEN)
+				defendResult = DefendSkill.DefendState.CANCEL;
+			else{
+				attacker.Anim.SetTrigger("action");
+				defender.Anim.SetTrigger("action");
+				defendResult = DefendSkill.DefendState.SKILL;
+				switch(attacker.GetSpecialSkill().Name) {
+					case "consume" : {
+					if(attacker.Sp.Value > 1000) {
+						attacker.DecreaseHp(-100);
+						attacker.IncreaseSp(-1000);
+					}
+						break;
+					}
+					case "reflect" : {
+						break;
+					}
+					case "diss" : {
+						if(attacker.Sp.Value > 1000) {
+							defender.DecreaseHp(100);
+							attacker.IncreaseSp(-1000);
+							defender.Anim.Play("hit");
+						}
+						break;
+					}
+					case "vita500" : {
+						break;
+					}
+				}
+			}
+		}
+		else if(defendData.Button == Note.Button.SKILL) {
+			if(attackData.Button == Note.Button.GREEN)
+				defendResult = DefendSkill.DefendState.HIT;
+			else {
+				attacker.Anim.SetTrigger("action");
+				defender.Anim.SetTrigger("action");
+				defendResult = DefendSkill.DefendState.SKILL;
+				switch(defender.GetSpecialSkill().Name) {
+					case "consume" : {
+						if(defender.Sp.Value > 1000) {
+							defender.DecreaseHp(-100);
+							defender.IncreaseSp(-1000);
+						}
+						break;
+					}
+					case "reflect" : {
+						break;
+					}
+					case "diss" : {
+						if(defender.Sp.Value > 1000) {
+							attacker.DecreaseHp(100);
+							defender.IncreaseSp(-1000);
+							attacker.Anim.Play("hit");
+						}
+						break;
+					}
+					case "vita500" : {
+						break;
+					}
+				}
+			}
+		}
 		else if(defendData.Button == Note.Button.NONE
 				&& attackData.Type == InputManager.InputType.DOWN
 				&& attackerSkill.IsLongButton) {
@@ -197,12 +327,14 @@ public class BattleManager : MonoBehaviour {
 										* (1 - defenderSkill.DefendRate));
 					defender.IncreaseSp((int)defenderSkill.SkillPoint);
 				} catch {}
+				defender.IncreaseSp((int)defendData.Judge);
 				try {
 					if(attackerSkill.IsLongButton && attackData.Type == InputManager.InputType.DOWN) {
 						this.LongButtonTime = time;
 					}
 					attacker.Anim.SetTrigger("action");
 					attacker.DecreaseHp(defenderSkill.Damage);
+					attacker.IncreaseSp((int)attackData.Judge);
 				} catch {}
 				break;
 			}
@@ -214,10 +346,11 @@ public class BattleManager : MonoBehaviour {
 										* (1 - defenderSkill.DefendRate));
 					defender.IncreaseSp((int)defenderSkill.SkillPoint);
 				} catch {}
+				defender.IncreaseSp((int)defendData.Judge);
 				try {
 					attackerEffect.Play("cancel", -1, 0);
 					attacker.Anim.Play("hit", -1, 0);
-					attacker.DecreaseHp(defenderSkill.Damage);
+					attacker.DecreaseHp((int)defenderSkill.Damage);
 				} catch {}
 				this.CurrentCombo = 0;
 				break;
@@ -227,7 +360,7 @@ public class BattleManager : MonoBehaviour {
 				try {
 					if(attackerSkill.IsLongButton && attackData.Type == InputManager.InputType.UP) {
 						defender.Anim.Play("hit", -1, 0);
-						float damage = (time - this.LongButtonTime) / 25000.0f;
+						float damage = (time - this.LongButtonTime) / (MAX_STRONG * 10000);
 						if (damage > 100)
 							defenderEffect.Play("str_full", -1, 0);
 						else
@@ -250,6 +383,7 @@ public class BattleManager : MonoBehaviour {
 						defender.Anim.Play("hit", -1, 0);
 						defender.DecreaseHp(attackerSkill.Damage[CurrentCombo - 1]);
 					}
+					attacker.IncreaseSp((int)attackData.Judge);
 				} catch {}
 				attacker.Anim.SetTrigger("action");
 				attacker.IncreaseSp((int)attackerSkill.SkillPoint[CurrentCombo - 1]);
@@ -268,7 +402,7 @@ public class BattleManager : MonoBehaviour {
 		if(attackData.Button == Note.Button.RED
 		   && attackData.Type == InputManager.InputType.UP
 		   && defendResult == DefendSkill.DefendState.HIT
-		   && (time - this.LongButtonTime) / 25000.0f > 100)
+		   && (time - this.LongButtonTime) / (MAX_STRONG * 1000000) > 1)
 			CancelFlip = true;
 	}
 
@@ -329,7 +463,8 @@ public class BattleManager : MonoBehaviour {
 	// calculates next combo
 	private uint GetNextCombo(Note.Button curBut,
 							  InputManager.InputType curType,
-							  AttackSkill skill) {
+							  AttackSkill skill,
+							  int time) {
 		// skill not found
 		if(skill == null)
 			return 0;
@@ -341,8 +476,12 @@ public class BattleManager : MonoBehaviour {
 		else if(skill.IsLongButton
 				&& LastButton == curBut && LastType != InputManager.InputType.UP
 				&& (curType == InputManager.InputType.KEEP
-					|| curType == InputManager.InputType.UP))
-			return 2;
+					|| curType == InputManager.InputType.UP)) {
+			if((time - this.LongButtonTime) / (MAX_STRONG * 1000000) > 1) {
+				return 3;
+			}
+			else return 2;
+		}
 		// new button pressed
 		else if(curBut != Note.Button.NONE && LastButton == Note.Button.NONE)
 			return 1;

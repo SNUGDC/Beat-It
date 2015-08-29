@@ -988,12 +988,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   skills:
-  - sprite: {fileID: 21300000, guid: 516b433f6a84f4c23981564a5f0de2a5, type: 3}
-    name: vita500
-    koreanName: "\uBE44\uD0C0500"
-    description: "\uB2F9\uC2E0\uC740 \uC624\uB298 \uD558\uB8E8\\nAmazing \uD569\uB2C8\uB2E4."
-    length: 10
-    sp: 2000
   - sprite: {fileID: 21300000, guid: 8e1331b2dbb5a43b9a89bf09bb38f243, type: 3}
     name: consume
     koreanName: "\uAD00\uAC1D\uD761\uC218"
@@ -1001,6 +995,12 @@ MonoBehaviour:
       \uC9C0\uD0A4\uC138\uC694!"
     length: 10
     sp: 1000
+  - sprite: {fileID: 21300000, guid: 516b433f6a84f4c23981564a5f0de2a5, type: 3}
+    name: vita500
+    koreanName: "\uBE44\uD0C0500"
+    description: "\uB2F9\uC2E0\uC740 \uC624\uB298 \uD558\uB8E8\\nAmazing \uD569\uB2C8\uB2E4."
+    length: 10
+    sp: 2000
   - sprite: {fileID: 21300000, guid: 7503ba56c2ebf405b929a9a3380a5f4a, type: 3}
     name: diss
     koreanName: "\uB514\uC2A4"
@@ -1017,8 +1017,8 @@ MonoBehaviour:
   - sprite: {fileID: 21300000, guid: 85a14bdaafd824a21a627d227ceb8045, type: 3}
     name: Character 1
     skillNames:
-    - vita500
     - consume
+    - vita500
     skills: []
   - sprite: {fileID: 21300000, guid: 8c6401fab5de84f0fa208ba992fe671c, type: 3}
     name: Character 2

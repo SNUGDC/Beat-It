@@ -12,22 +12,6 @@ public class InputManager : MonoBehaviour {
 	private InputType[] CurInput;
 	private bool[] IsLongPressed;
 
-	// interpret input & put data into queue
-	private void OnSocketRead(string input) {
-		// message format is
-		// "player noteId button type judge"
-		string[] splitInput = input.Split(' ');
-		int player = System.Convert.ToInt32(splitInput[0]);
-		Note.Core newData = new Note.Core {
-			Id = System.Convert.ToUInt32(splitInput[1]),
-			Button = (Note.Button)System.Enum.Parse(typeof(Note.Button), splitInput[2]),
-			Type = (InputType)System.Enum.Parse(typeof(InputType), splitInput[3]),
-			Judge = System.Convert.ToUInt32(splitInput[4])
-		};
-		// add interpreted data into data queue
-		BattleMan.DataQueue[player].Enqueue(newData);
-	}
-
 	private KeyCode ButToKeycode(Note.Button but) {
 		switch(but) {
 			case Note.Button.RED :
@@ -36,10 +20,8 @@ public class InputManager : MonoBehaviour {
 				return (Player == 0) ? KeyCode.A : KeyCode.L;
 			case Note.Button.GREEN :
 				return (Player == 0) ? KeyCode.D : KeyCode.Quote;
-			case Note.Button.SKILL1 :
+			case Note.Button.SKILL :
 				return (Player == 0) ? KeyCode.Q : KeyCode.O;
-			case Note.Button.SKILL2 :
-				return (Player == 0) ? KeyCode.W : KeyCode.P;
 			default :
 				return KeyCode.None;
 		}
@@ -47,8 +29,8 @@ public class InputManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		IsLongPressed = new bool[5] {true, true, true, true, true};
-		CurInput = new InputType[5];
+		IsLongPressed = new bool[4] {true, true, true, true};
+		CurInput = new InputType[4];
 	}
 
 	// Update is called once per frame
@@ -66,9 +48,7 @@ public class InputManager : MonoBehaviour {
 		else if (CurInput [2] == InputType.DOWN || CurInput [2] == InputType.UP)
 			target.Press (Player, curTime, Note.Button.GREEN, CurInput [2]);
 		else if (CurInput [3] == InputType.DOWN)
-			target.Press (Player, curTime, Note.Button.SKILL1, CurInput [3]);
-		else if (CurInput [4] == InputType.DOWN)
-			target.Press (Player, curTime, Note.Button.SKILL2, CurInput [4]);
+			target.Press (Player, curTime, Note.Button.SKILL, CurInput [3]);
 		// if button is keep at appropriate time, send event
 		else if(System.Math.Abs(target.Time - curTime) <= KEEP_MARGIN) {
 			if(CurInput[0] == InputType.KEEP)
@@ -94,7 +74,6 @@ public class InputManager : MonoBehaviour {
 		if(CurInput[1] == InputType.UP) IsLongPressed[1] = false;
 		if(CurInput[2] == InputType.UP) IsLongPressed[2] = false;
 		if(CurInput[3] == InputType.UP) IsLongPressed[3] = false;
-		if(CurInput[4] == InputType.UP) IsLongPressed[4] = false;
 		// process red button
 		if(Input.GetKeyDown(ButToKeycode(Note.Button.RED)))
 			CurInput[0] = InputType.DOWN;
@@ -138,34 +117,18 @@ public class InputManager : MonoBehaviour {
 		else
 			CurInput[2] = InputType.NONE;
 		// process skill 1 button
-		if(Input.GetKeyDown(ButToKeycode(Note.Button.SKILL1)))
+		if(Input.GetKeyDown(ButToKeycode(Note.Button.SKILL)))
 			CurInput[3] = InputType.DOWN;
-		else if(Input.GetKeyUp(ButToKeycode(Note.Button.SKILL1))){
+		else if(Input.GetKeyUp(ButToKeycode(Note.Button.SKILL))){
 			CurInput[3] = (IsLongPressed[3])
 						  ? InputType.UP
 						  : InputType.NONE;
 		}
-		else if(Input.GetKey(ButToKeycode(Note.Button.SKILL1)))
+		else if(Input.GetKey(ButToKeycode(Note.Button.SKILL)))
 			CurInput[3] = (IsLongPressed[3])
 						  ? InputType.KEEP
 						  : InputType.NONE;
 		else
 			CurInput[3] = InputType.NONE;
-
-		// process skill 2 button
-		if (Input.GetKeyDown (ButToKeycode (Note.Button.SKILL2)))
-			CurInput [4] = InputType.DOWN;
-		else if (Input.GetKeyUp (ButToKeycode (Note.Button.SKILL2))) {
-			CurInput [4] = (IsLongPressed [4])
-						? InputType.UP
-						: InputType.NONE;
-		}
-		else if (Input.GetKey (ButToKeycode (Note.Button.SKILL2)))
-			CurInput [4] = (IsLongPressed [4])
-						? InputType.KEEP
-						: InputType.NONE;
-		else
-			CurInput [4] = InputType.NONE;
-
 	}
 }

@@ -7,7 +7,7 @@ public class Note{
 		public InputManager.InputType Type;
 		public uint Judge;
 	}
-	public enum Button {NONE, RED, BLUE, GREEN, SKILL1, SKILL2};
+	public enum Button {NONE, RED, BLUE, GREEN, SKILL};
 
 	public bool IsValid; // is shown in display
 	public int Time; // time of note
@@ -53,7 +53,7 @@ public class Note{
 		}
 		// if timing is good & is valid input, accept
 		else if(judge > 0 && manager.IsValidInput(player, but, type)){
-			manager.GetReady(player, but, type);
+			manager.GetReady(player, but, type, this.Time);
 			manager.ShowJudge(player, (uint)(judge * 50) + 50);
 			CoreData[player].Button = but;
 			CoreData[player].Type = type;

@@ -9,7 +9,7 @@ public class Player : MonoBehaviour {
 	public SpBar Sp; // Sp Text
 	private AttackSkill[] AttackSkillList;
 	private DefendSkill[] DefendSkillList;
-	private SpecialSkill[] SpecialSkillList;
+	private SpecialSkill Special;
 	public int PlayerType; // 1P or 2P?
 
 	void Start() {
@@ -20,10 +20,10 @@ public class Player : MonoBehaviour {
 		DefendSkillList = new DefendSkill[3] {
 			new DefendSkill(), new DefendSkill(), new DefendSkill()
 		};
-		SpecialSkillList = new SpecialSkill[2] {
-			new SpecialSkill(gameData.characterData[PlayerType-1].character.skills[0]),
-			new SpecialSkill(gameData.characterData[PlayerType-1].character.skills[1])
-		};
+		Special = new SpecialSkill(
+			gameData.characterData[PlayerType-1].character.skills[0].name
+		);
+		Debug.Log(Special.Name);
 		SetSkill("none"); // TODO : remove this
 	}
 	
@@ -36,12 +36,13 @@ public class Player : MonoBehaviour {
 		AttackSkillList[0].Name = "Power";
 		AttackSkillList[0].IsLongButton = true;
 		AttackSkillList[0].TurnLength = 2;
-		AttackSkillList[0].Damage = new uint[2] {0, 100};
-		AttackSkillList[0].SkillPoint = new uint[2] {0, 0};
+		AttackSkillList[0].Damage = new uint[3] {0, 100, 100};
+		AttackSkillList[0].SkillPoint = new uint[3] {0, 0, 0};
 		AttackSkillList[0].PlayAnim
 			= (Animator target, uint combo, bool isUp) => {
 				if(combo == 1) target.Play("strong_ready_ready");
-				else if(isUp)  target.Play("strong_success_ready");
+				else if(combo == 2 && isUp)  target.Play("strong_success_ready_normal");
+				else if(combo == 3 && isUp)  target.Play("strong_success_ready_full");
 			};
 		AttackSkillList[1].Name = "Consecutive";
 		AttackSkillList[1].IsLongButton = false;
@@ -154,20 +155,13 @@ public class Player : MonoBehaviour {
 		switch(but) {
 			case Note.Button.RED	: return this.DefendSkillList[0];
 			case Note.Button.BLUE	: return this.DefendSkillList[1];
-			case Note.Button.GREEN	: return this.DefendSkillList[2];;
+			case Note.Button.GREEN	: return this.DefendSkillList[2];
 			default					: return null;
 		}
 	}
 
-	public SpecialSkill GetSpecialSkill(Note.Button but) {
-		switch (but) {
-		case Note.Button.SKILL1:
-			return this.SpecialSkillList [0];
-		case Note.Button.SKILL2:
-			return this.SpecialSkillList [1];
-		default					:
-			return null;
-		}
+	public SpecialSkill GetSpecialSkill() {
+		return Special;
 	}
 
 	public void DecreaseHp(int diff) {
