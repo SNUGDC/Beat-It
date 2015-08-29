@@ -93,7 +93,7 @@ public class Player : MonoBehaviour {
 		DefendSkillList[1].Name = "Evade";
 		DefendSkillList[1].DefendRate = 1.0f;
 		DefendSkillList[1].Damage = 0;
-		DefendSkillList[1].SkillPoint = 500;
+		DefendSkillList[1].SkillPoint = 0;
 		DefendSkillList[1].DoDefend
 			= (string attackSkill, bool defendableJudge, bool isUp) => {
 				switch(attackSkill) {
